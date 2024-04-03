@@ -5,7 +5,14 @@
         <div class="col mt-5">
             <div class="card card-outline">
                 <div class="card-header">
-                    <h5 class="m-0"><b>Informasi</b> User</h5>
+                    <div class="row">
+                        <div class="col">
+                            <h5 class="m-0"><b>Informasi</b> User</h5>
+                        </div>
+                        <div class="col d-flex justify-content-end">
+                            <button type="submit" class="btn btn-warning"><b>Edit Profil</b></button>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="alert alert-success" role="alert">
