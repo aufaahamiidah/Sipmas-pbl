@@ -15,6 +15,7 @@
     <link href="{{ asset('') }}assets/css/bootstrap-extended.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <link href="{{ asset('') }}assets/css/app.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('') }}plugins/fontawesome-free/css/all.min.css">
     <link href="{{ asset('') }}assets/css/icons.css" rel="stylesheet">
     <title>{{ env('APP_NAME', 'PBL IK-TI') }}</title>
 </head>
@@ -56,7 +57,8 @@
                                                 <label for="inputEmailAddress" class="form-label">Alamat Email</label>
                                                 <input type="email" name="email"
                                                     class="form-control @error('email') is-invalid @enderror"
-                                                    id="inputEmailAddress" placeholder="Alamat Email" value="{{ old('email') }}">
+                                                    id="inputEmailAddress" placeholder="Alamat Email"
+                                                    value="{{ old('email') }}">
                                                 @error('email')
                                                     <span class="invalid-feedback" role="alert">
                                                         <strong>{{ $message }}</strong>
@@ -92,8 +94,13 @@
                                                     href="{{ route('password.request') }}">Lupa password ?</a>
                                             </div>
                                             <div class="col-12">
-                                                <div class="d-grid">
+                                                <div class="d-grid gap-2">
                                                     <button type="submit" class="btn btn-primary btn-sm">Masuk</button>
+                                                    <p class="text-center m-0 p-0">atau</p>
+                                                    <a href="#" class="btn btn-outline-primary btn-sm"><span
+                                                            class="fab fa-google text-primary"></span>
+                                                        Login dengan
+                                                        Google</a>
                                                 </div>
                                             </div>
                                             <div class="col-12">
