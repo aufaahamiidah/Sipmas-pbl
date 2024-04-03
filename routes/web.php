@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\GoogleLoginController;
 use App\Http\Controllers\DBBackupController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MenuController;
@@ -41,4 +42,5 @@ Route::resource('manage-permission', PermissionController::class)->only('store',
 
 
 Route::get('dbbackup', [DBBackupController::class, 'DBDataBackup']);
-Route::get('tes231', [HomeController::class, 'getUsulanTema']);
+Route::get('login/google/redirect', [GoogleLoginController::class, 'redirect'])->middleware('guest')->name('redirect');
+Route::get('login/google/callback', [GoogleLoginController::class, 'callback'])->middleware('guest')->name('callback');

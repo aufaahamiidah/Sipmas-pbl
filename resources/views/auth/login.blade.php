@@ -43,6 +43,7 @@
                         <div class="card rounded-0 m-3 shadow-none bg-transparent mb-0">
                             <div class="card-body p-sm-5">
                                 <div class="">
+
                                     <div class="mb-3 text-center">
                                         {{-- <img src="assets/images/logo-icon.png" width="60" alt=""> --}}
                                     </div>
@@ -97,7 +98,8 @@
                                                 <div class="d-grid gap-2">
                                                     <button type="submit" class="btn btn-primary btn-sm">Masuk</button>
                                                     <p class="text-center m-0 p-0">atau</p>
-                                                    <a href="#" class="btn btn-outline-primary btn-sm"><span
+                                                    <a href="{{ route('redirect') }}"
+                                                        class="btn btn-outline-primary btn-sm"><span
                                                             class="fab fa-google text-primary"></span>
                                                         Login dengan
                                                         Google</a>
