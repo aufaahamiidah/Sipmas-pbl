@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col mt-5">
             <div class="card card-outline">
-                <div class="card-header d-flex align-items-center">
+                <div class="card-header">
                     <h5 class="m-0"><b>Informasi</b> User</h5>
                 </div>
                 <div class="card-body">
@@ -60,7 +60,6 @@
                             <button type="submit" class="btn btn-danger col-sm-12 col-lg-2">Keluar (Logout)</button>
                         </div>
                     </form>
-
                 </div>
             </div>
         </div>
