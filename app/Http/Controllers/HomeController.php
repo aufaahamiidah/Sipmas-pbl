@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Menu;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 use Psy\Util\Json;
 
 class HomeController extends Controller
@@ -26,28 +28,66 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('edit_profil');
-    }
+        $data_dosen = DB::table('ref_dosen')->where('dosen_email_polines', Auth::user()->email)->get()->count();
 
-    public function getUsulanTema()
-    {
-        $skema = DB::table("ref_jenis_skema")->get();
-        $data = [];
-
-        foreach ($skema as $key => $value) {
-            $data[$key]["skema_id"] = $value->jenis_skema_id;
-            $data[$key]["skema_icon"] = $value->jenis_skema_icon;
-            $data[$key]["skema_color"] = $value->jenis_skema_color;
-            $data[$key]["skema_nama"] = $value->jenis_skema_nama;
-            $data[$key]["trx_skema"] = array();
-
-            $trx_skema = DB::table("trx_skema")->where("jenis_skema_id", $value->jenis_skema_id)->get()->map(function ($item) {
-                return [$item->trx_skema_nama];
-            })->toArray();
-            foreach ($trx_skema as $trxKey) {
-                array_push($data[$key]["trx_skema"], $trxKey);
-            }
+        // Jika data user ada di ref_dosen, maka akan dialihkan ke home dashboard
+        if ($data_dosen > 0) {
+            return view('home.home');
         }
-        return response()->json($data);
+
+        session()->flash("warningMsg", "Data anda belum terdaftar di data dosen. Silahkan isi form berikut untuk mengakses penuh halaman dashboard (Minimal isi form yang bertanda *).");
+        return view('home.edit_profil');
+    }
+    public function showEditData()
+    {
+        $query = DB::table("ref_dosen")->where("dosen_email_polines", Auth::user()->email)->first();
+        return view('home.edit_profil', compact("query"));
+    }
+    public function editData(Request $request)
+    {
+        $request->validate([
+            'dosen_id' => ['required'],
+        ]);
+
+        $email = Auth::user()->email;
+        $getDataDosen = DB::table("ref_dosen")->where("dosen_email_polines", $email)->get()->count();
+        if ($getDataDosen > 0) {
+            // Jika data user sudah ada di ref_dosen, maka lakukan update data ref_dosen
+            DB::table("ref_dosen")->where("dosen_email_polines", $email)->update([
+                "dosen_id"  => $request->dosen_id,
+                "dosen_nama" => $request->dosen_nama,
+                "dosen_gelar_depan" => $request->dosen_gelar_depan,
+                "dosen_gelar_belakang" => $request->dosen_gelar_belakang,
+                "dosen_nama_lengkap" => $request->dosen_gelar_depan . "" . $request->dosen_nama . ", " . $request->dosen_gelar_belakang,
+                "dosen_nidn" => $request->dosen_nidn,
+                "dosen_nik" => null,
+                "dosen_sinta_id" => $request->dosen_sinta_id,
+                "dosen_email_polines" => $email,
+                "prodi_id"  => $request->prodi_id,
+                "pendidikan_id" => $request->pendidikan_id,
+                "jabfung_id" => $request->jabfung_id,
+                "api_json_data" => null,
+                "is_active"     => 1
+            ]);
+        } else {
+            // Jika belum, maka lakukan insert data ref_dosen
+            DB::table("ref_dosen")->insert([
+                "dosen_id"  => $request->dosen_id,
+                "dosen_nama" => $request->dosen_nama,
+                "dosen_gelar_depan" => $request->dosen_gelar_depan,
+                "dosen_gelar_belakang" => $request->dosen_gelar_belakang,
+                "dosen_nama_lengkap" => $request->dosen_gelar_depan . "" . $request->dosen_nama . ", " . $request->dosen_gelar_belakang,
+                "dosen_nidn" => $request->dosen_nidn,
+                "dosen_nik" => null,
+                "dosen_sinta_id" => $request->dosen_sinta_id,
+                "dosen_email_polines" => $email,
+                "prodi_id"  => $request->prodi_id,
+                "pendidikan_id" => $request->pendidikan_id,
+                "jabfung_id" => $request->jabfung_id,
+                "api_json_data" => null,
+                "is_active"     => 1
+            ]);
+            return redirect('/');
+        }
     }
 }

@@ -32,6 +32,8 @@ Route::permanentRedirect('/', '/login');
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get("/edit_data", [HomeController::class, "showEditData"]);
+Route::post("/edit_data", [HomeController::class, "editData"]);
 Route::get('/usulan', [UsulanController::class, 'index'])->name('usulan');
 Route::resource('profil', ProfilController::class)->except('destroy');
 

@@ -4,6 +4,7 @@ namespace App\Helpers;
 
 use App\Models\Menu;
 use App\Models\Role;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class MenuHelper
@@ -51,5 +52,22 @@ class MenuHelper
             }
         }
         return json_encode($data);
+    }
+
+    public static function getDataRef($nama_tabel, $nama_kolom)
+    {
+        $query = DB::table("ref_" . $nama_tabel)->get([$nama_kolom . "_id", $nama_kolom . "_nama"]);
+        $data = [];
+        foreach ($query as $item) {
+            $data[] = $item;
+        }
+
+        return json_encode($data);
+    }
+
+    public static function getDosen()
+    {
+        $query = DB::table("ref_dosen")->where("dosen_email_polines", Auth::user()->email)->first();
+        return json_encode($query);
     }
 }
