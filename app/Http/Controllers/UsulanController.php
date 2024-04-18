@@ -19,7 +19,7 @@ class UsulanController extends Controller
             $judul_usulan = DB::table('trx_usulan')->where('usulan_id', $value->usulan_id)->first();
             $nama_skema  = DB::table('trx_skema')->where('trx_skema_id', $judul_usulan->trx_skema_id)->first();
             $id_ketua = DB::table("trx_usulan_anggota_dosen")->where("usulan_id", $value->usulan_id)->where("is_ketua", 1)->pluck('dosen_id');
-            $id_anggota_dosen = DB::table("trx_usulan_anggota_dosen")->where("usulan_id", $value->usulan_id)->where("is_ketua", 0)->pluck('dosen_id');
+            // $id_anggota_dosen = DB::table("trx_usulan_anggota_dosen")->where("usulan_id", $value->usulan_id)->where("is_ketua", 0)->pluck('dosen_id');
             $status = DB::table('trx_usulan_status')->where('usulan_id', $value->usulan_id)->first();
 
             $data[$key] = [
@@ -33,6 +33,9 @@ class UsulanController extends Controller
         }
         return $data;
     }
+    public function actionTambahUsulan(Request $request)
+    {
+    }
     public function index()
     {
         $usulan = $this->lihat_usulan();
@@ -40,6 +43,19 @@ class UsulanController extends Controller
     }
     public function tambahUsulan()
     {
-        return view('usulan.tambah_usulan');
+        $skema_id = $_GET['skema_id'];
+        $skema = DB::table('trx_skema')->where('trx_skema_id', $skema_id)->get();
+        $skema_pendanaan = DB::table('trx_skema_pendanaan')->where('trx_skema_id', $skema_id)->get();
+        $luaran_tambahan = DB::table('ref_luaran_tambahan')->get();
+        $ref_iku = DB::table('ref_iku')->where('jenis_skema_id', $skema->jenis_skema_id);
+
+        $data[] = [
+            "skema_id" => $skema_id,
+            "skema_nama" => $skema->trx_skema_nama,
+            "skema_pendanaan" => $skema_pendanaan,
+            "luaran_tambahan" => $luaran_tambahan,
+            "ref_iku" => $ref_iku
+        ];
+        return view('usulan.tambah_usulan', compact('data'));
     }
 }
