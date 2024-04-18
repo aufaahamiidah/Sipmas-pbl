@@ -35,6 +35,7 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::get("/edit_data", [HomeController::class, "showEditData"]);
 Route::post("/edit_data", [HomeController::class, "editData"]);
 Route::get('/usulan', [UsulanController::class, 'index'])->name('usulan');
+Route::get('/tambah_usulan', [UsulanController::class, 'tambahUsulan'])->name('tambah_usulan');
 Route::resource('profil', ProfilController::class)->except('destroy');
 Route::get("/data_usulan", [HomeController::class, "data_usulan"]);
 

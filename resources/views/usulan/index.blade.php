@@ -50,7 +50,8 @@
                                     </div>
                                     <div class="modal-body d-flex flex-column" style="gap: 10px">
                                         @foreach ($item->trx_skema as $skema)
-                                            <button class="btn btn-info">{{ $skema[0] }}</button>
+                                            <a class="btn btn-info"
+                                                href="{{ url('/tambah_usulan') }}">{{ $skema[0] }}</a>
                                         @endforeach
                                     </div>
                                 </div>
@@ -61,7 +62,7 @@
             </div>
         </div>
 
-        <div class="row mb-3">
+        <div class="row mb-1">
             <div class="col-12 card card-outline">
                 <div class="card-body" style="overflow: auto">
                     <table class="table table-bordered">

@@ -38,4 +38,8 @@ class UsulanController extends Controller
         $usulan = $this->lihat_usulan();
         return view('usulan.index', compact('usulan'));
     }
+    public function tambahUsulan()
+    {
+        return view('usulan.tambah_usulan');
+    }
 }
