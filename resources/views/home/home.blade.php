@@ -16,7 +16,6 @@
                 </div>
                 <div class="card-body">
                     <div class="alert alert-success" role="alert">
-                        <h5>Perhatian!</h5>
                         <p class="m-0 p-0">Profil anda sudah lengkap.</p>
                     </div>
                     <form>

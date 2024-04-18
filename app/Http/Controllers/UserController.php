@@ -134,7 +134,7 @@ class UserController extends Controller
                 'password' => Hash::make($request->password),
                 'email_verified_at' => !blank($request->verified) ? now() : null
             ];
-            if(empty($request->password)){
+            if (empty($request->password)) {
                 unset($update_data['password']);
             }
             $user->update($update_data);

@@ -52,7 +52,6 @@
                                         @foreach ($item->trx_skema as $skema)
                                             <button class="btn btn-info">{{ $skema[0] }}</button>
                                         @endforeach
-
                                     </div>
                                 </div>
                             </div>
@@ -70,16 +69,53 @@
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">Judul</th>
+                                <th scope="col">Abstrak</th>
                                 <th scope="col">Skema</th>
                                 <th scope="col">Anggota</th>
                                 <th scope="col">Pendanaan</th>
                                 <th scope="col">Status</th>
+                                <th scope="col">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="text-center" style="background-color: #F6F6F6">
+                            @foreach ($usulan as $key => $item)
+                                <tr class="m-auto">
+                                    <td>{{ $key + 1 }}</td>
+                                    <td>{{ $item['usulan_judul'] }}</td>
+                                    <td>{{ $item['usulan_abstrak'] }}</td>
+                                    <td>{{ $item['nama_skema'] }}</td>
+                                    <td>
+                                        <ul>
+                                            <li><b> *Ketua</b> {{ $item['ketua']->dosen_nama }}
+                                                ({{ $item['ketua']->dosen_id }})
+                                            </li>
+                                        </ul>
+                                    </td>
+                                    <td>
+                                        {{ $item['pendanaan'] }}
+                                    </td>
+                                    <td>
+                                        {{ $item['status_id'] }}
+                                    </td>
+                                    <td>
+                                        @if ($item['status_id'] < 2)
+                                            <button class="btn btn-warning">Edit Usulan</button>
+                                        @else
+                                            <button class="btn btn-warning" disabled>Edit Usulan</button>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                            {{-- @foreach (json_decode(MenuHelper::lihatDataUsulan()) as $key => $item)
+                                <tr>
+                                <tr>{{ $key }}</tr>
+                                <td>{{ $item->usulan_judul }}</td>
+                                <td>{{ $item->trx_skema_nama }}</td>
+                                </tr>
+                            @endforeach --}}
+                            {{-- <tr class="text-center" style="background-color: #F6F6F6">
                                 <td colspan="100%">Belum ada usulan yang dibuat.</td>
-                            </tr>
+                            </tr> --}}
                         </tbody>
                     </table>
                 </div>
