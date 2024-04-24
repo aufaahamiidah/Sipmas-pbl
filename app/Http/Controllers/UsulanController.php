@@ -33,28 +33,39 @@ class UsulanController extends Controller
         }
         return $data;
     }
-    public function actionTambahUsulan(Request $request)
+    public function step_1()
+    {
+    }
+    public function step_2()
+    {
+    }
+    public function step_3()
     {
     }
     public function index()
     {
         $usulan = $this->lihat_usulan();
-        return view('usulan.index', compact('usulan'));
+        $dosen_id = DB::table("ref_dosen")->where("dosen_email_polines", Auth::user()->email)->first();
+        $count_usulan = DB::table("trx_usulan_anggota_dosen")->where("dosen_id", $dosen_id->dosen_id)->count();
+        return view('usulan.index', compact('usulan', 'count_usulan'));
     }
     public function tambahUsulan()
     {
         $skema_id = $_GET['skema_id'];
+        $step = $_GET['step'];
+
         $skema = DB::table('trx_skema')->where('trx_skema_id', $skema_id)->first();
         $skema_pendanaan = DB::table('trx_skema_pendanaan')->where('trx_skema_id', $skema_id)->get();
         $luaran_tambahan = DB::table('ref_luaran_tambahan')->get();
-        $ref_iku = DB::table('ref_iku')->where('jenis_skema_id', $skema->jenis_skema_id);
+        $ref_iku = DB::table('ref_iku')->where('jenis_skema_id', $skema_id);
 
-        $data[] = [
+        $data = [
             "skema_id" => $skema_id,
             "skema_nama" => $skema->trx_skema_nama,
             "skema_pendanaan" => $skema_pendanaan,
             "luaran_tambahan" => $luaran_tambahan,
-            "ref_iku" => $ref_iku
+            "ref_iku" => $ref_iku,
+            "step" => $step
         ];
         return view('usulan.tambah_usulan', compact('data'));
     }
