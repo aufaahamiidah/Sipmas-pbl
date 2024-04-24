@@ -57,6 +57,8 @@ class UsulanController extends Controller
         $skema_pendanaan = DB::table('trx_skema_pendanaan')->where('trx_skema_id', $skema_id)->get();
         $luaran_tambahan = DB::table('ref_luaran_tambahan')->get();
         $ref_iku = DB::table('ref_iku')->where('jenis_skema_id', $skema_id);
+        $data_dosen = DB::table('ref_dosen')->where('is_active', 1)->get();
+        $data_mhs = DB::table('ref_mahasiswa')->get();
 
         $data = [
             "skema_id" => $skema_id,
@@ -64,7 +66,9 @@ class UsulanController extends Controller
             "skema_pendanaan" => $skema_pendanaan,
             "luaran_tambahan" => $luaran_tambahan,
             "ref_iku" => $ref_iku,
-            "step" => $step
+            "step" => $step,
+            "data_dosen" => $data_dosen,
+            "data_mhs" => $data_mhs
         ];
         return view('usulan.tambah_usulan', compact('data'));
     }
