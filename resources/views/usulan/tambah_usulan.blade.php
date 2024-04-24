@@ -214,19 +214,52 @@
                                 anda
                                 unggah.</p>
                         </div>
+                        <form>
+                            <div class="row form-group-row p-3">
+                                <div class="col-sm">
+                                    <label>Total Pendanaan <span style="color: red">*</span></label>
+                                </div>
+                                <div class="col">
+                                    <input type="text" class="form-control" placeholder="" >
+                                    <p><b>Petunjuk: masukkan total dana penelitian yang diajukan.</b></p>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row form-group-row p-3">
+                                <div class="col-sm">
+                                    <label>Bahan habis pakai dan peralatan<span style="color: red">*</span> (Maks. <span style="color: red">60%</span>)</label>
+                                </div>
+                                <div class="col">
+                                    <input type="text" class="form-control" placeholder="" >
+                                </div>
+                            </div>
+                            <div class="row form-group-row p-3">
+                                <div class="col-sm">
+                                    <label>Perjalanan<span style="color: red">*</span> (Maks. <span style="color: red">30%</span>)</label>
+                                </div>
+                                <div class="col">
+                                    <input type="text" class="form-control" placeholder="" >
+                                </div>
+                            </div>
+                            <div class="row form-group-row p-3">
+                                <div class="col-sm">
+                                    <label>Lain-lain<span style="color: red">*</span> (Maks. <span style="color: red">40%</span>)</label>
+                                    <p style="font-size: 13px">publikasi, seminar, laporan, lainnya</p>
+                                </div>
+                                <div class="col">
+                                    <input type="text" class="form-control" placeholder="" >
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
             <div class="container mb-1">
                 <div class="card">
                     <div class="card-body">
-                        <div class="row d-flex justify-content-between">
-                            <div class="col">
-                                <button type="button" class="btn btn-warning"><b>Kembali</b></button>
-                            </div>
-                            <div class="col">
-                                <button type="button" class="btn btn-primary"><b>Lanjutkan>></b></button>
-                            </div>
+                        <div class="d-flex justify-content-between">
+                            <button type="button" class="btn btn-warning"><b>Kembali</b></button>
+                            <button type="button" class="btn btn-primary"><b>Lanjutkan>></b></button>
                         </div>
                     </div>
                 </div>
