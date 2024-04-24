@@ -284,7 +284,7 @@
                                     <label>Luaran Tambahan<b class="text-danger">*</b></label>
                                 </div>
                                 <div class="col">
-                                    <input type="text" class="form-control" placeholder="" disabled>
+                                    <input type="text" class="form-control" placeholder="">
                                 </div>
                             </div>
                         <div class="row form-group-row mt-3">
@@ -292,7 +292,7 @@
                                     <label>IKU<b class="text-danger">*</b></label>
                                 </div>
                                 <div class="col">
-                                    <input type="text" class="form-control" placeholder="" disabled>
+                                    <input type="text" class="form-control" placeholder="">
                                 </div>
                         </div>
                 </div>
