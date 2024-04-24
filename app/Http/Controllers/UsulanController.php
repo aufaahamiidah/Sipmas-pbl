@@ -44,10 +44,10 @@ class UsulanController extends Controller
     public function tambahUsulan()
     {
         $skema_id = $_GET['skema_id'];
-        $skema = DB::table('trx_skema')->where('trx_skema_id', $skema_id)->get();
+        $skema = DB::table('trx_skema')->where('trx_skema_id', $skema_id)->first();
         $skema_pendanaan = DB::table('trx_skema_pendanaan')->where('trx_skema_id', $skema_id)->get();
         $luaran_tambahan = DB::table('ref_luaran_tambahan')->get();
-        $ref_iku = DB::table('ref_iku')->where('jenis_skema_id', $skema->jenis_skema_id);
+        $ref_iku = DB::table('ref_iku')->where('jenis_skema_id', $skema_id);
 
         $data[] = [
             "skema_id" => $skema_id,
