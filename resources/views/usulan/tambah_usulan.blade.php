@@ -9,12 +9,15 @@
             </div>
         </div>
     </div>
-<!-- step 1 -->
+    <!-- step 1 -->
+
     <form action="">
         <div class="container mb-1">
             <div class="card card-danger">
                 <div class="card-header">
                     <h3 class="card-title"><b>Peraturan Skema</b></h3>
+                    <h3>{{ $data['skema_nama'] }}</h3>
+                    <h3></h3>
                 </div>
                 <div class="card-body">
                     <ul>
@@ -58,7 +61,7 @@
                                 </div>
                             </div>
                         </form>
-                    </div>  
+                    </div>
                 </div>
             </div>
             <div class="col">
@@ -68,10 +71,11 @@
                     </div>
                     <div class="card-body">
                         <div class="alert alert-primary" role="alert">
-                            <p class="m-0 p-0">Apabila anda menemukan ketidaksesuaian data pribadi (NIP, Nama, Jabatan Fungsional, ID
-                            Sinta, NIDN), silakan mengisi aduan pada tautan berikut: https://bit.ly/aduansipmas.</p>
+                            <p class="m-0 p-0">Apabila anda menemukan ketidaksesuaian data pribadi (NIP, Nama, Jabatan
+                                Fungsional, ID
+                                Sinta, NIDN), silakan mengisi aduan pada tautan berikut: https://bit.ly/aduansipmas.</p>
                         </div>
-                    </div>  
+                    </div>
                 </div>
             </div>
         </div>
@@ -83,7 +87,7 @@
             </div>
         </div>
     </form>
-<!-- step 2 -->
+    <!-- step 2 -->
     <form action="">
         <div class="container mb-1">
             <div class="card card-outline card-primary">
@@ -93,9 +97,10 @@
                 <div class="card-body">
                     <div class="alert alert-danger" role="alert">
                         <h5><b>Perhatian</b></h5>
-                        <p class="m-0 p-0">Tuliskan rincian masing-masing komponen pendanaan pada berkas proposal yang anda unggah.</p>
+                        <p class="m-0 p-0">Tuliskan rincian masing-masing komponen pendanaan pada berkas proposal yang anda
+                            unggah.</p>
                     </div>
-                </div>  
+                </div>
             </div>
         </div>
         <div class="container mb-1">
@@ -113,8 +118,8 @@
             </div>
         </div>
     </form>
-<!-- step 3 -->
-<form action="">
+    <!-- step 3 -->
+    <form action="">
         <div class="row mb-1">
             <div class="col">
                 <div class="card card-outline card-primary">
@@ -122,7 +127,7 @@
                         <h4 class="card-title"><b>Capaian</b></h4>
                     </div>
                     <div class="card-body">
-                    </div>  
+                    </div>
                 </div>
             </div>
             <div class="col">
@@ -131,7 +136,7 @@
                         <h4 class="card-title"><b>Berkas Usulan</b></h4>
                     </div>
                     <div class="card-body">
-                    </div>  
+                    </div>
                 </div>
             </div>
         </div>

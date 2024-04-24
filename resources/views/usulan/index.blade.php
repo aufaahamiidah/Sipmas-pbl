@@ -79,44 +79,41 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($usulan as $key => $item)
-                                <tr class="m-auto">
-                                    <td>{{ $key + 1 }}</td>
-                                    <td>{{ $item['usulan_judul'] }}</td>
-                                    <td>{{ $item['usulan_abstrak'] }}</td>
-                                    <td>{{ $item['nama_skema'] }}</td>
-                                    <td>
-                                        <ul>
-                                            <li><b> *Ketua</b> {{ $item['ketua']->dosen_nama }}
-                                                ({{ $item['ketua']->dosen_id }})
-                                            </li>
-                                        </ul>
-                                    </td>
-                                    <td>
-                                        {{ $item['pendanaan'] }}
-                                    </td>
-                                    <td>
-                                        {{ $item['status_id'] }}
-                                    </td>
-                                    <td>
-                                        @if ($item['status_id'] < 2)
-                                            <button class="btn btn-warning">Edit Usulan</button>
-                                        @else
-                                            <button class="btn btn-warning" disabled>Edit Usulan</button>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
-                            {{-- @foreach (json_decode(MenuHelper::lihatDataUsulan()) as $key => $item)
+                            @if ($count_usulan > 0)
+                                @foreach ($usulan as $key => $item)
+                                    <tr class="m-auto">
+                                        <td>{{ $key + 1 }}</td>
+                                        <td>{{ $item['usulan_judul'] }}</td>
+                                        <td>{{ $item['usulan_abstrak'] }}</td>
+                                        <td>{{ $item['nama_skema'] }}</td>
+                                        <td>
+                                            <ul>
+                                                <li><b> *Ketua</b> {{ $item['ketua']->dosen_nama }}
+                                                    ({{ $item['ketua']->dosen_id }})
+                                                </li>
+                                            </ul>
+                                        </td>
+                                        <td>
+                                            {{ $item['pendanaan'] }}
+                                        </td>
+                                        <td>
+                                            {{ $item['status_id'] }}
+                                        </td>
+                                        <td>
+                                            @if ($item['status_id'] < 2)
+                                                <button class="btn btn-warning">Edit Usulan</button>
+                                            @else
+                                                <button class="btn btn-warning" disabled>Edit Usulan</button>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @else
                                 <tr>
-                                <tr>{{ $key }}</tr>
-                                <td>{{ $item->usulan_judul }}</td>
-                                <td>{{ $item->trx_skema_nama }}</td>
+                                    <td colspan="8" class="text-center">Data Kosong</td>
                                 </tr>
-                            @endforeach --}}
-                            {{-- <tr class="text-center" style="background-color: #F6F6F6">
-                                <td colspan="100%">Belum ada usulan yang dibuat.</td>
-                            </tr> --}}
+                            @endif
+
                         </tbody>
                     </table>
                 </div>
