@@ -33,6 +33,15 @@ class UsulanController extends Controller
         }
         return $data;
     }
+    public function step_1()
+    {
+    }
+    public function step_2()
+    {
+    }
+    public function step_3()
+    {
+    }
     public function index()
     {
         $usulan = $this->lihat_usulan();
