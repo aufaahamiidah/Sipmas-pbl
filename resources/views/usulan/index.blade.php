@@ -51,7 +51,7 @@
                                     <div class="modal-body d-flex flex-column" style="gap: 10px">
                                         @foreach ($item->trx_skema as $skema)
                                             <a class="btn btn-info"
-                                                href="{{ url('/tambah_usulan') }}">{{ $skema[0] }}</a>
+                                                href="{{ url('/tambah_usulan?skema_id=1') }}">{{ $skema[0] }}</a>
                                         @endforeach
                                     </div>
                                 </div>
