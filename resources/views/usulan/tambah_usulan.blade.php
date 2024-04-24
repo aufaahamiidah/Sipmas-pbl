@@ -73,7 +73,7 @@
             </div>
             <div class="container mb-1">
                 <div class="row">
-                    <div class="col">
+                    <div class="col-sm-12 col-lg-6">
                         <div class="card card-outline card-primary">
                             <div class="card-header">
                                 <h4 class="card-title"><b>Data Penelitian</b></h4>
@@ -110,7 +110,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col">
+                    <div class="col=sm-12 col-lg-6">
                         <div class="card card-outline card-primary">
                             <div class="card-header">
                                 <h4 class="card-title"><b>Anggota</b></h4>
@@ -134,7 +134,8 @@
                                             </tr>
                                             <tr>
                                                 <th class="text-center col-2">
-                                                    <button class="btn btn-success" onclick="addDosen()"><b>+</b></button>
+                                                    <button type="button" class="btn btn-success"
+                                                        onclick="addDosen()"><b>+</b></button>
                                                 </th>
                                                 <th class="text-center col-10">Nama Dosen</th>
                                             </tr>
@@ -142,7 +143,7 @@
                                         <tbody id="isiDosen">
                                             <tr>
                                                 <td colspan="2">
-                                                    <select class="custom-select">
+                                                    <select class="custom-select" name="dosen[0][name]">
                                                         <option selected>Pilih Dosen</option>
                                                         @foreach ($data['data_dosen'] as $item)
                                                             <option value="{{ $item->dosen_id }}">
@@ -164,7 +165,8 @@
                                             </tr>
                                             <tr>
                                                 <th class="text-center col-2">
-                                                    <button class="btn btn-success" onclick="addMhs()"><b>+</b></button>
+                                                    <button type="button" class="btn btn-success"
+                                                        onclick="addMhs()"><b>+</b></button>
                                                 </th>
                                                 <th class="text-center col-10">Nama Mahasiswa</th>
                                             </tr>
@@ -191,8 +193,7 @@
             <div class="container mb-1">
                 <div class="card">
                     <div class="card-body d-flex justify-content-end">
-                        <button type="submit" onclick="usulanAction(1)"
-                            class="btn btn-primary"><b>Lanjutkan>></b></button>
+                        <button onclick="usulanAction(1)" class="btn btn-primary"><b>Lanjutkan>></b></button>
                     </div>
                 </div>
             </div>
@@ -280,26 +281,43 @@
 
 @push('js')
     <script>
-        const tbDosen = $("#isiDosen");
-        const tbMhs = $("#isiMhs");
-        let newTD = document.createElement('td');
-        newTD.setAttribute('colspan', '2');
+        const tbDosen = document.getElementById('isiDosen');
+        var count_dosen = 1;
+        const tbMhs = document.getElementById('isiMhs');
+        var count_mhs = 1;
 
         function addDosen() {
+            let newDosen = `
+            <td colspan="2">
+                <select class="custom-select" name="dosen[` + count_dosen + `][name]">
+                    <option selected>Pilih Dosen</option>
+                    @foreach ($data['data_dosen'] as $item)
+                        <option value="{{ $item->dosen_id }}">
+                            ({{ $item->dosen_id }})
+                            {{ $item->dosen_nama_lengkap }}</option>
+                    @endforeach
+                </select>
+            </td>
+            `;
+            tbDosen.innerHTML += newDosen;
+            count_dosen++;
+        }
 
+        function addMhs() {
+            let newMhs = `
+            <td colspan="2">
+                <select class="custom-select" name="dosen[` + count_mhs + `][name]">
+                    <option selected>Pilih Mahasiswa</option>
+                    @foreach ($data['data_mhs'] as $item)
+                        <option value="{{ $item->mhs_id }}">
+                            ({{ $item->mhs_id }})
+                            {{ $item->mhs_nama }}</option>
+                    @endforeach
+                </select>
+            </td>
+            `;
+            tbMhs.innerHTML += newMhs;
+            count_dosen++;
         }
     </script>
 @endpush
-
-{{-- <tr>
-    <td colspan="2">
-        <select class="custom-select">
-            <option selected>Pilih Dosen</option>
-            @foreach ($data['data_dosen'] as $item)
-                <option value="{{ $item->dosen_id }}">
-                    ({{ $item->dosen_id }})
-                    {{ $item->dosen_nama_lengkap }}</option>
-            @endforeach
-        </select>
-    </td>
-</tr> --}}
