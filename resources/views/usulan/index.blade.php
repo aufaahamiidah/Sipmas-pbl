@@ -51,7 +51,7 @@
                                     <div class="modal-body d-flex flex-column" style="gap: 10px">
                                         @foreach ($item->trx_skema as $skema)
                                             <a class="btn btn-info"
-                                                href="{{ url('/tambah_usulan') }}?skema_id={{ $item->skema_id }}">{{ $skema[0] }}</a>
+                                                href="{{ url('/tambah_usulan') }}?skema_id={{ $item->skema_id }}&step=1&usulan_id=">{{ $skema[0] }}</a>
                                         @endforeach
                                     </div>
                                 </div>
@@ -91,17 +91,33 @@
                                                 <li><b> *Ketua</b> {{ $item['ketua']->dosen_nama }}
                                                     ({{ $item['ketua']->dosen_id }})
                                                 </li>
+                                                @foreach ($item['anggota_dosen'] as $val)
+                                                    <li>
+                                                        {{ $val }}
+                                                    </li>
+                                                @endforeach
+                                                @foreach ($item['anggota_mhs'] as $val)
+                                                    <li>
+                                                        {{ $val }}
+                                                    </li>
+                                                @endforeach
                                             </ul>
                                         </td>
                                         <td>
-                                            {{ $item['pendanaan'] }}
+                                            @if ($item['count_pendanaan'] > 0)
+                                                {{ $item['pendanaan']->first()->pendanaan_value }}
+                                            @else
+                                                -
+                                            @endif
+
                                         </td>
                                         <td>
                                             {{ $item['status_id'] }}
                                         </td>
                                         <td>
                                             @if ($item['status_id'] < 2)
-                                                <button class="btn btn-warning">Edit Usulan</button>
+                                                <a href="{{ url('/tambah_usulan') }}?skema_id={{ $item['skema_id'] }}&step=1&usulan_id={{ $item['usulan_id'] }}"
+                                                    class="btn btn-warning">Edit Usulan</a>
                                             @else
                                                 <button class="btn btn-warning" disabled>Edit Usulan</button>
                                             @endif
