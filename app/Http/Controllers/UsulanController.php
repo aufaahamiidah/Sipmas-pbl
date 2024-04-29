@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Trx_usulan;
+use App\Models\Usulan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -33,8 +34,22 @@ class UsulanController extends Controller
         }
         return $data;
     }
-    public function step_1()
+    public function step_1(Request $request)
     {
+        $request->validate([
+            'judul' => 'required|string|max:255',
+            'abstrak' => 'required|string',
+        ]);
+
+        dump($request->judul);
+        dump($request->abstrak);
+
+        DB::table("trx_usulan")->insert([
+            "usulan_judul" => $request->usulan_judul,
+            "usulan_abstrak" => $request->usulan_abstrak,
+        ]);
+
+        return redirect()->back()->with('success', 'Data berhasil ditambahkan ke dalam database.');
     }
     public function step_2()
     {
