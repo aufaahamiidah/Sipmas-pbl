@@ -56,7 +56,8 @@
     </div>
     <!-- step 1 -->
     @if ($data['step'] == '1')
-        <form action="" method="POST">
+        <form @if ($_GET['usulan_id'] != '') action=""  @else action="{{ url('step_0') }}" @endif method="POST">
+            @csrf
             <div class="container mb-1">
                 <div class="card card-danger">
                     <div class="card-header">
@@ -85,8 +86,10 @@
                                             <label>Skema</label>
                                         </div>
                                         <div class="col">
-                                            <input type="text" class="form-control" value="{{ $data['skema_nama'] }}"
-                                                disabled>
+                                            <input type="hidden" name="skema_id" id="skema_id" class="form-control"
+                                                value="{{ $data['skema_id'] }}">
+                                            <input type="text" name="skemaid" class="form-control"
+                                                value="{{ $data['skema_nama'] }}" disabled>
                                         </div>
                                     </div>
                                     <div class="row form-group-row mt-3">
@@ -95,7 +98,7 @@
                                         </div>
                                         <div class="col">
                                             <input type="text" class="form-control" name="judul" id="judul"
-                                                required>
+                                                required @if ($_GET['usulan_id'] != '') disabled @endif>
                                         </div>
                                     </div>
                                     <div class="row form-group-row mt-3">
@@ -103,14 +106,14 @@
                                             <label>Abstrak <b class="text-danger">*</b></label>
                                         </div>
                                         <div class="col">
-                                            <textarea class="form-control" id="abstrak" name="abstrak" required></textarea>
+                                            <textarea @if ($_GET['usulan_id'] != '') disabled @endif class="form-control" id="abstrak" name="abstrak" required></textarea>
                                         </div>
                                     </div>
                                 </form>
                             </div>
                         </div>
                     </div>
-                    <div class="col=sm-12 col-lg-6">
+                    <div class="col-sm-12 col-lg-6">
                         <div class="card card-outline card-primary">
                             <div class="card-header">
                                 <h4 class="card-title"><b>Anggota</b></h4>
@@ -143,7 +146,7 @@
                                         <tbody id="isiDosen">
                                             <tr>
                                                 <td colspan="2">
-                                                    <select class="custom-select" name="dosen[0][name]">
+                                                    <select class="custom-select" name="anggota_dosen[0]">
                                                         <option selected>Pilih Dosen</option>
                                                         @foreach ($data['data_dosen'] as $item)
                                                             <option value="{{ $item->dosen_id }}">
@@ -173,7 +176,7 @@
                                         </thead>
                                         <tbody id="isiMhs">
                                             <td colspan="2">
-                                                <select class="custom-select">
+                                                <select class="custom-select" name="anggota_mhs[0]">
                                                     <option selected>Pilih Mahasiswa</option>
                                                     @foreach ($data['data_mhs'] as $item)
                                                         <option value="{{ $item->mhs_id }}">
@@ -189,11 +192,11 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="container mb-1">
-                <div class="card">
-                    <div class="card-body d-flex justify-content-end">
-                        <button onclick="usulanAction(1)" class="btn btn-primary"><b>Lanjutkan>></b></button>
+                <div class="container mb-1">
+                    <div class="card">
+                        <div class="card-body d-flex justify-content-center">
+                            <button class="btn w-100 btn-primary"><b>Simpan dan Lanjutkan</b></button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -221,34 +224,37 @@
                                     <label>Total Pendanaan <span style="color: red">*</span></label>
                                 </div>
                                 <div class="col">
-                                    <input type="text" class="form-control" placeholder="" >
+                                    <input type="text" class="form-control" placeholder="">
                                     <p><b>Petunjuk: masukkan total dana penelitian yang diajukan.</b></p>
                                 </div>
                             </div>
                             <hr>
                             <div class="row form-group-row p-3">
                                 <div class="col-sm">
-                                    <label>Bahan habis pakai dan peralatan<span style="color: red">*</span> (Maks. <span style="color: red">60%</span>)</label>
+                                    <label>Bahan habis pakai dan peralatan<span style="color: red">*</span> (Maks. <span
+                                            style="color: red">60%</span>)</label>
                                 </div>
                                 <div class="col">
-                                    <input type="text" class="form-control" placeholder="" >
+                                    <input type="text" class="form-control" placeholder="">
                                 </div>
                             </div>
                             <div class="row form-group-row p-3">
                                 <div class="col-sm">
-                                    <label>Perjalanan<span style="color: red">*</span> (Maks. <span style="color: red">30%</span>)</label>
+                                    <label>Perjalanan<span style="color: red">*</span> (Maks. <span
+                                            style="color: red">30%</span>)</label>
                                 </div>
                                 <div class="col">
-                                    <input type="text" class="form-control" placeholder="" >
+                                    <input type="text" class="form-control" placeholder="">
                                 </div>
                             </div>
                             <div class="row form-group-row p-3">
                                 <div class="col-sm">
-                                    <label>Lain-lain<span style="color: red">*</span> (Maks. <span style="color: red">40%</span>)</label>
+                                    <label>Lain-lain<span style="color: red">*</span> (Maks. <span
+                                            style="color: red">40%</span>)</label>
                                     <p style="font-size: 13px">publikasi, seminar, laporan, lainnya</p>
                                 </div>
                                 <div class="col">
-                                    <input type="text" class="form-control" placeholder="" >
+                                    <input type="text" class="form-control" placeholder="">
                                 </div>
                             </div>
                         </form>
@@ -265,49 +271,75 @@
                     </div>
                 </div>
             </div>
+
         </form>
     @endif
 
     @if ($data['step'] == '3')
         <!-- step 3 -->
-        <form action="">
-            <div class="row mb-1">
-                <div class="col">
-                    <div class="card card-outline card-primary">
-                        <div class="card-header">
-                            <h4 class="card-title"><b>Capaian</b></h4>
-                        </div>
-                        <div class="card-body">
-                        </div>
-                    </div>
+<form action="">
+    <div class="row mb-1">
+        <div class="col">
+            <div class="card card-outline card-primary">
+                <div class="card-header">
+                    <h4 class="card-title"><b>Capaian</b></h4>
                 </div>
-                <div class="col">
-                    <div class="card card-outline card-primary">
-                        <div class="card-header">
-                            <h4 class="card-title"><b>Berkas Usulan</b></h4>
+                <div class="card-body">
+                <div class="row form-group-row mt-3">
+                                <div class="col-sm">
+                                    <label>Luaran Tambahan<b class="text-danger">*</b></label>
+                                </div>
+                                <div class="col">
+                                    <input type="text" class="form-control" placeholder="">
+                                </div>
+                            </div>
+                        <div class="row form-group-row mt-3">
+                                <div class="col-sm">
+                                    <label>IKU<b class="text-danger">*</b></label>
+                                </div>
+                                <div class="col">
+                                    <input type="text" class="form-control" placeholder="">
+                                </div>
                         </div>
-                        <div class="card-body">
-                        </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card card-outline card-primary">
+                <div class="card-header">
+                    <h4 class="card-title"><b>Berkas Usulan</b></h4>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="proposalFile">Proposal <sup class="text-danger">(PDF)*</sup></label>
+                        <input type="file" class="form-control" id="proposalFile">
+                    </div>
+
+                    <div class="form-group">
+                    <label for="rabFile">Rencana Anggaran Biaya (RAB) <sup class="text-danger">(PDF)*</sup></label>
+                    <input type="file" class="form-control" id="rabFile">
                     </div>
                 </div>
             </div>
-            <div class="container mb-1">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row d-flex justify-content-between">
-                            <div class="col">
-                                <button type="button" class="btn btn-warning"><b>Kembali</b></button>
-                            </div>
-                            <div class="col">
-                                <button type="button" class="btn btn-primary"><b>Simpan Draft</b></button>
-                            </div>
-                            <div class="col">
-                                <button type="button" class="btn btn-success"><b>Simpan Permanen</b></button>
-                            </div>
-                        </div>
+        </div>
+
+<div class="container mb-1">
+        <div class="card">
+            <div class="card-body">
+                <div class="row d-flex justify-content-between">
+                    <div class="col">
+                        <button type="button" class="btn btn-warning"><b>Kembali</b></button>
+                    </div>
+                    <div class="col">
+                        <button type="button" class="btn btn-primary"><b>Simpan Draft</b></button>
+                    </div>
+                    <div class="col">
+                        <button type="button" class="btn btn-success"><b>Simpan Permanen</b></button>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
         </form>
     @endif
 @endsection
@@ -322,7 +354,7 @@
         function addDosen() {
             let newDosen = `
             <td colspan="2">
-                <select class="custom-select" name="dosen[` + count_dosen + `][name]">
+                <select class="custom-select" name="anggota_dosen[` + count_dosen + `]">
                     <option selected>Pilih Dosen</option>
                     @foreach ($data['data_dosen'] as $item)
                         <option value="{{ $item->dosen_id }}">
@@ -339,7 +371,7 @@
         function addMhs() {
             let newMhs = `
             <td colspan="2">
-                <select class="custom-select" name="dosen[` + count_mhs + `][name]">
+                <select class="custom-select" name="anggota_mhs[` + count_mhs + `]">
                     <option selected>Pilih Mahasiswa</option>
                     @foreach ($data['data_mhs'] as $item)
                         <option value="{{ $item->mhs_id }}">

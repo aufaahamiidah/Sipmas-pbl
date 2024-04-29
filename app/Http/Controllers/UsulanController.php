@@ -24,37 +24,84 @@ class UsulanController extends Controller
             $status = DB::table('trx_usulan_status')->where('usulan_id', $value->usulan_id)->first();
 
             $data[$key] = [
+                "usulan_id" =>  $value->usulan_id,
                 "usulan_judul" => $judul_usulan->usulan_judul,
                 "usulan_abstrak" => $judul_usulan->usulan_abstrak,
+                "skema_id" => $judul_usulan->trx_skema_id,
                 "nama_skema"   => $nama_skema->trx_skema_nama,
                 "ketua" => DB::table('ref_dosen')->where('dosen_id', $id_ketua)->first(),
-                "pendanaan" => DB::table('trx_usulan_dana')->where('usulan_id', $value->usulan_id)->first()->pendanaan_value,
-                "status_id" => $status->status_id
+                "count_pendanaan" => DB::table('trx_usulan_dana')->where('usulan_id', $value->usulan_id)->count(),
+                "pendanaan" => DB::table('trx_usulan_dana')->where('usulan_id', $value->usulan_id),
+                "status_id" => $status->status_id,
+                "anggota_dosen" => DB::table('trx_usulan_anggota_dosen')->where('is_ketua', 0)->where('usulan_id', $value->usulan_id)->pluck('dosen_id'),
+                "anggota_mhs" => DB::table('trx_usulan_anggota_mhs')->where('usulan_id', $value->usulan_id)->pluck('mhs_id')
             ];
         }
         return $data;
     }
-    public function step_1(Request $request)
+    public function step_0(Request $request)
     {
-        $request->validate([
-            'judul' => 'required|string|max:255',
-            'abstrak' => 'required|string',
+        $this->validate($request, [
+            'judul' => 'required',
+            'abstrak' => 'required'
         ]);
 
-        dump($request->judul);
-        dump($request->abstrak);
+        // Masuk ke tabel trx_usulan
+        $insert_trx_usulan = DB::table('trx_usulan')->insertGetId([
+            'usulan_judul'  => $request->judul,
+            'usulan_abstrak' => $request->abstrak,
+            'usulan_pendanaan' => null,
+            'trx_skema_id' => $request->skema_id,
+            'is_active' => 1,
+            'is_submitted' => 0,
+            'created_at' => now(),
+        ]);
+        $usulan_id = $insert_trx_usulan;
 
-        DB::table("trx_usulan")->insert([
-            "usulan_judul" => $request->usulan_judul,
-            "usulan_abstrak" => $request->usulan_abstrak,
+        // Masuk ke trx_usulan_anggota_dosen (ketua)
+        DB::table('trx_usulan_anggota_dosen')->insert([
+            'usulan_id' => $usulan_id,
+            'dosen_id' => DB::table("ref_dosen")->where("dosen_email_polines", Auth::user()->email)->first()->dosen_id,
+            'is_ketua' => 1,
+            'is_verified' => 1
         ]);
 
-        return redirect()->back()->with('success', 'Data berhasil ditambahkan ke dalam database.');
+        // Masuk ke trx_usulan_status
+        DB::table('trx_usulan_status')->insert([
+            'usulan_id' => $usulan_id,
+            'status_id' => 1,
+            'created_by' => DB::table("ref_dosen")->where("dosen_email_polines", Auth::user()->email)->first()->dosen_id,
+            'created_at' => now(),
+            'updated_at' => now(),
+            'is_active' => 1
+        ]);
+
+        // Masuk ke trx_usulan_anggota_dosen (anggota)
+        $id_dosen_anggota = $request->input('anggota_dosen');
+        foreach ($id_dosen_anggota as $dosen_anggota_id) {
+            DB::table('trx_usulan_anggota_dosen')->insert([
+                'usulan_id' => $usulan_id,
+                'dosen_id' => $dosen_anggota_id,
+                'is_ketua' => 0,
+                'is_verified' => 1
+            ]);
+        }
+
+        // Masuk ke trx_usulan_anggota_mhs (anggota)
+        $id_mhs_anggota = $request->input('anggota_mhs');
+        foreach ($id_mhs_anggota as $mhs_anggota_id) {
+            DB::table('trx_usulan_anggota_mhs')->insert([
+                'usulan_id' => $usulan_id,
+                'mhs_id' => $mhs_anggota_id,
+            ]);
+        }
+
+        return redirect('/');
+    }
+    public function step_1()
+    {
     }
     public function step_2()
-    {
-    }
-    public function step_3()
     {
     }
     public function index()

@@ -49,3 +49,7 @@ Route::resource('manage-permission', PermissionController::class)->only('store',
 Route::get('dbbackup', [DBBackupController::class, 'DBDataBackup']);
 Route::get('login/google/redirect', [GoogleLoginController::class, 'redirect'])->middleware('guest')->name('redirect');
 Route::get('login/google/callback', [GoogleLoginController::class, 'callback'])->middleware('guest')->name('callback');
+Route::post('/step_0', [UsulanController::class, 'step_0']);
+Route::post('/step_1', [UsulanController::class, 'step_1']);
+Route::post('/step_2', [UsulanController::class, 'step_2']);
+Route::post('/step_3', [UsulanController::class, 'step_3']);
