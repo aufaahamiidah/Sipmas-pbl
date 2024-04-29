@@ -137,4 +137,8 @@ class UsulanController extends Controller
         ];
         return view('usulan.tambah_usulan', compact('data'));
     }
+    public function detail()
+    {
+        return view('usulan.detail');
+    }
 }
