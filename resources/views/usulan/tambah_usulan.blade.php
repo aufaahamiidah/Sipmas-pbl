@@ -18,9 +18,9 @@
                     </div>
                     <div class="card-body">
                         <div class="row gx-5">
-                            <div class="col ">
+                            <div class="col-sm-12 col-md-4 mb-2">
                                 <div class="p-3 border border-success bg-light">
-                                    <div class="d-flex justify-content-center align-items-center" style="gap: 10px">
+                                    <div class="d-flex align-items-center" style="gap: 10px">
                                         <div class="bg-success px-3 pt-1">
                                             <h5>1</h5>
                                         </div>
@@ -28,9 +28,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col ">
+                            <div class="col-sm-12 col-md-4 mb-2">
                                 <div class="p-3 border bg-light {{ $data['step'] >= 2 ? 'border-success' : '' }}">
-                                    <div class="d-flex justify-content-center align-items-center" style="gap: 10px">
+                                    <div class="d-flex align-items-center" style="gap: 10px">
                                         <div class="px-3 pt-1 {{ $data['step'] >= 2 ? 'bg-success' : 'bg-secondary' }}">
                                             <h5>2</h5>
                                         </div>
@@ -38,9 +38,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col ">
+                            <div class="col-sm-12 col-md-4 mb-2">
                                 <div class="p-3 border bg-light {{ $data['step'] >= 3 ? 'border-success' : '' }}">
-                                    <div class="d-flex justify-content-center align-items-center" style="gap: 10px">
+                                    <div class="d-flex align-items-center" style="gap: 10px">
                                         <div class="px-3 pt-1 {{ $data['step'] >= 3 ? 'bg-success' : 'bg-secondary' }}">
                                             <h5>3</h5>
                                         </div>
