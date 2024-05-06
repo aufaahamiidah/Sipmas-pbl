@@ -119,7 +119,7 @@
                                         </td>
                                         <td>
                                             @if ($item['status_usulan'][0]->status_id == 1)
-                                                <a href="{{ url('/tambah_usulan') }}?step=1&usulan_id={{ $item['usulan_id'] }}"
+                                                <a href="{{ url('/tambah_usulan') }}?skema_id={{ $item['skema_id'] }}&step=1&usulan_id={{ $item['usulan_id'] }}"
                                                     class="btn btn-warning">Edit Usulan</a>
                                             @else
                                                 <button class="btn btn-warning" disabled>Edit Usulan</button>

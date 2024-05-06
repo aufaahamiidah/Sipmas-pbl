@@ -204,6 +204,8 @@ class UsulanController extends Controller
             $data['pendanaan'] = DB::table('trx_skema_pendanaan')->where('trx_skema_id', $data['skema_id'])->get(['pendanaan_id', 'pendanaan_nama', 'pendanaan_persentase']);
             return view('usulan.step2', compact('data'));
         } else if ($step == 3) {
+            $data['luaran_tambahan'] = DB::table('ref_luaran_tambahan')
+                ->get(['luaran_tambahan_nama', 'luaran_tambahan_id']);
             return view('usulan.step3', compact('data'));
         }
     }
