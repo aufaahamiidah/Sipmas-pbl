@@ -3,10 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Trx_usulan;
-use Dotenv\Validator;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+
 
 class UsulanController extends Controller
 {
@@ -160,8 +161,61 @@ class UsulanController extends Controller
             return redirect("/tambah_usulan?&step=3&usulan_id=$request->usulan_id");
         }
     }
-    public function step_2()
+    public function step_2(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'proposal' => 'required|file|mimetypes:application/pdf,application/x-pdf',
+            'rab'   => 'required|file|mimetypes:application/pdf,application/x-pdf'
+        ]);
+
+        if ($validator->fails()) {
+            toastr()->error('Proposal dan RAB wajib diisi.');
+            return redirect()->back();
+        }
+
+        try {
+            $usulan_id = $request->usulan_id;
+            // Masukkan ke trx_usulan_luaran_tambahan
+            $luaran_tambahan = $request->input('luaran');
+            $target_luaran_tambahan = $request->input('targetLuaran');
+            foreach ($luaran_tambahan as $key => $value) {
+                DB::table('trx_usulan_tambahan')->insert([
+                    'usulan_id' => $usulan_id,
+                    'luaran_tambahan_id' => $value,
+                    'luaran_tambahan_target' => $target_luaran_tambahan[$key]
+                ]);
+            }
+
+            // Masukkan ke trx_usulan_iku
+            $iku = $request->input('iku');
+            $realisasiIku = $request('realisasiIku');
+            foreach ($iku as $key => $value) {
+                DB::table('trx_usulan_iku')->insert([
+                    'usulan_id' => $usulan_id,
+                    'iku_id'    => $value,
+                    'iku_target' => $realisasiIku[$key]
+                ]);
+            }
+
+            // Masukkan ke trx_usulan_file
+            $id_file = $request->input('id_file');
+            $inputFile = $request->input('inputFile');
+            foreach ($inputFile as $key => $value) {
+                $file = $request->file($value);
+                $nama_file = date('Ymdhis') . '.' . $file->getClientOriginalExtension();
+                DB::table('trx_usulan_file')
+                    ->insert([
+                        'usulan_id' => $usulan_id,
+                        'skema_file_id' => $id_file[$key],
+                        'file_name' => $nama_file,
+                        'created_at' => now(),
+                    ]);
+                $file->storeAs('public/trx_usulan_file', $nama_file);
+            }
+        } catch (\Throwable $th) {
+            toastr()->error('Terjadi masalah pada server. Data user gagal ditambahkan.');
+            return back();
+        }
     }
     public function index()
     {
@@ -204,8 +258,21 @@ class UsulanController extends Controller
             $data['pendanaan'] = DB::table('trx_skema_pendanaan')->where('trx_skema_id', $data['skema_id'])->get(['pendanaan_id', 'pendanaan_nama', 'pendanaan_persentase']);
             return view('usulan.step2', compact('data'));
         } else if ($step == 3) {
-            $data['luaran_tambahan'] = DB::table('ref_luaran_tambahan')
-                ->get(['luaran_tambahan_nama', 'luaran_tambahan_id']);
+            $skema_id = DB::table('trx_usulan')
+                ->where('usulan_id', $_GET['usulan_id'])->pluck('trx_skema_id')[0];
+            $data['trx_luaran_tambahan'] = DB::table('trx_skema_luaran_tambahan')
+                ->join('ref_luaran_tambahan', 'trx_skema_luaran_tambahan.luaran_tambahan_id', '=', 'ref_luaran_tambahan.luaran_tambahan_id')
+                ->where('trx_skema_luaran_tambahan.trx_skema_id', $skema_id)
+                ->where('ref_luaran_tambahan.is_aktif', 1)
+                ->get(['ref_luaran_tambahan.luaran_tambahan_id', 'luaran_tambahan_nama']);
+            $data['ref_iku'] = DB::table('ref_iku')
+                ->where('jenis_skema_id', $skema_id)
+                ->where('is_active', 1)
+                ->get();
+            $data['skema_file'] = DB::table('trx_skema_file')
+                ->where('trx_skema_id', $skema_id)
+                ->where('is_active', 1)
+                ->get(['skema_file_id', 'file_key', 'file_caption', 'file_accepted_type', 'is_required']);
             return view('usulan.step3', compact('data'));
         }
     }

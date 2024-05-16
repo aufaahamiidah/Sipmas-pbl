@@ -162,7 +162,8 @@
                     @foreach ($data['data_dosen'] as $item)
                         <option value="{{ $item->dosen_id }}">
                             ({{ $item->dosen_id }})
-                            {{ $item->dosen_nama_lengkap }}</option>
+                            {{ $item->dosen_nama_lengkap }}
+                        </option>
                     @endforeach
                 </select>
             </td>
