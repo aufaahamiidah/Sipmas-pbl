@@ -279,31 +279,31 @@
         <!-- step 3 -->
 <form action="">
     <div class="row mb-1">
-        <div class="col">
-            <div class="card card-outline card-primary">
-                <div class="card-header">
-                    <h4 class="card-title"><b>Capaian</b></h4>
+    <div class="col">
+    <div class="card card-outline card-primary">
+        <div class="card-header">
+            <h4 class="card-title"><b>Capaian</b></h4>
+        </div>
+        <div class="card-body">
+            <div class="row form-group-row mt-3">
+                <div class="col-sm">
+                    <label>Luaran Tambahan<b class="text-danger">*</b></label>
                 </div>
-                <div class="card-body">
-                <div class="row form-group-row mt-3">
-                                <div class="col-sm">
-                                    <label>Luaran Tambahan<b class="text-danger">*</b></label>
-                                </div>
-                                <div class="col">
-                                    <input type="text" class="form-control" placeholder="">
-                                </div>
-                            </div>
-                        <div class="row form-group-row mt-3">
-                                <div class="col-sm">
-                                    <label>IKU<b class="text-danger">*</b></label>
-                                </div>
-                                <div class="col">
-                                    <input type="text" class="form-control" placeholder="">
-                                </div>
-                        </div>
+                <div class="col">
+                    <input type="text" class="form-control" placeholder="">
+                </div>
+            </div>
+            <div class="row form-group-row mt-3">
+                <div class="col-sm">
+                    <label>IKU<b class="text-danger">*</b></label>
+                </div>
+                <div class="col">
+                    <input type="text" class="form-control" placeholder="">
                 </div>
             </div>
         </div>
+    </div>
+</div>
         <div class="col">
             <div class="card card-outline card-primary">
                 <div class="card-header">
