@@ -62,8 +62,56 @@ class UpdateController extends Controller
         }
     }
 
-    public function update_step1()
+    public function update_step1(Request $request)
     {
+        $usulan_id = $request->usulan_id;
+        $skema_id = DB::table('trx_usulan')
+            ->where('usulan_id', $usulan_id)
+            ->pluck('trx_skema_id')[0];
+        $max_value = DB::table('trx_skema_settings')
+            ->where('trx_skema_id', $skema_id)
+            ->where('setting_key', 'max_dana')
+            ->pluck('setting_value')[0];
+        $total = $request->total;
+
+        //validasi 1
+        if ($total . $max_value) {
+            toastr()->error('Total dana melebihi ' . $max_value);
+            return back();
+        }
+        //validasi 2
+        $skema_pendanaan = DB::table('trx_skema_pendanaan')
+            ->where('trx_skema_id', $skema_id)
+            ->get(['pendanaan_id', 'pendanaan_persentase']);
+
+        foreach ($skema_pendanaan as $key => $value) {
+            $id_skema = $value->pendanaan_id;
+            $persentase = $value->pendanaan_persentase;
+            $max_value = $total * $persentase;
+            if ($request->$id_skema > $max_value) {
+                toastr()->error('Dana melebihi anggaran');
+                return back();
+            }
+        }
+        // Validasi 3
+        $tampung_value = 0;
+        foreach ($skema_pendanaan as $key => $value) {
+            $tampung_value += $request->$value->pendanaan_id;
+        }
+        if ($tampung_value != $request->$total) {
+            toastr()->error('Dana tidak sesuai dengan total dana');
+            return back();
+        }
+
+        //delete
+        DB::table('trx_usulan_dana')
+            ->insert([
+                'usulan_id' => $usulan_id,
+                'pendanaan_id' => $value->pendanaan_id,
+                'pendanaan_value' => $request->$value->pendanaan_id
+            ]);
+        toastr()->success('Berhasil update dana');
+        return redirect("/tambah_usulan?&step=3&usulan_id=$usulan_id&edit=1");
     }
 
     public function update_step2()
