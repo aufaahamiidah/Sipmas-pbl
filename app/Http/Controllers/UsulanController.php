@@ -202,6 +202,20 @@ class UsulanController extends Controller
                     ]);
                 $file->storeAs('public/trx_usulan_file', $nama_file);
             }
+
+            // Luaran Wajib
+            $get_Skema = DB::table('trx_usulan')->where('usulan_id', $usulan_id)->get('trx_skema_id');
+            $get_lwajib = DB::table('trx_skema_luaran_wajib')
+                ->where('trx_skema_id', $get_Skema->trx_skema_id)
+                ->get('luaran_wajib_id');
+            foreach ($get_lwajib->luaran_wajib_id as $key => $value) {
+                DB::table('trx_usulan_luaran_wajib')
+                    ->insert([
+                        'usulan_id' => $usulan_id,
+                        'luaran_wajib_id' => $value,
+                    ]);
+            }
+
             toastr()->success('Data berhasil di update');
             return redirect('/');
         } catch (\Throwable $th) {
