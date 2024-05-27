@@ -107,7 +107,7 @@ class UsulanController extends Controller
             ]);
         }
 
-        return redirect("/tambah_usulan?&step=2&usulan_id=$usulan_id");
+        return redirect("/tambah_usulan?&step=2&usulan_id=$usulan_id&edit");
     }
     public function step_1(Request $request)
     {
@@ -158,20 +158,20 @@ class UsulanController extends Controller
                 ->update([
                     'usulan_pendanaan'  => $count
                 ]);
-            return redirect("/tambah_usulan?&step=3&usulan_id=$request->usulan_id");
+            return redirect("/tambah_usulan?&step=3&usulan_id=$request->usulan_id&edit");
         }
     }
     public function step_2(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'proposal' => 'required|file|mimetypes:application/pdf,application/x-pdf',
-            'rab'   => 'required|file|mimetypes:application/pdf,application/x-pdf'
-        ]);
+        // $validator = Validator::make($request->all(), [
+        //     'proposal' => 'required|file|mimetypes:application/pdf,application/x-pdf',
+        //     'rab'   => 'required|file|mimetypes:application/pdf,application/x-pdf'
+        // ]);
 
-        if ($validator->fails()) {
-            toastr()->error('Proposal dan RAB wajib diisi.');
-            return redirect()->back();
-        }
+        // if ($validator->fails()) {
+        //     toastr()->error('Dokumen wajib diisi.');
+        //     return redirect()->back();
+        // }
 
         try {
             $usulan_id = $request->usulan_id;
@@ -212,6 +212,8 @@ class UsulanController extends Controller
                     ]);
                 $file->storeAs('public/trx_usulan_file', $nama_file);
             }
+            toastr()->success('Data berhasil di update');
+            return redirect('/');
         } catch (\Throwable $th) {
             toastr()->error('Terjadi masalah pada server. Data user gagal ditambahkan.');
             return back();
@@ -248,6 +250,22 @@ class UsulanController extends Controller
             $data['skema_nama'] = $skema->trx_skema_nama;
             $data['skema_pendanaan'] = $skema_pendanaan;
             $data['ref_iku'] = $ref_iku;
+
+            if ($_GET['usulan_id']) {
+                $usulan_id = $_GET['usulan_id'];
+                $data['data_usulan'] = [
+                    'skema' => DB::table('trx_usulan')->where('usulan_id', $usulan_id)
+                        ->join('trx_skema', 'trx_usulan.trx_skema_id', '=', 'trx_skema.trx_skema_id')
+                        ->get('trx_skema.trx_skema_nama'),
+                    'usulan' => DB::table('trx_usulan')->where('usulan_id', $usulan_id)->get(['usulan_judul', 'usulan_abstrak']),
+                    'anggota_dosen' => DB::table('trx_usulan_anggota_dosen')->where('usulan_id', $usulan_id)
+                        ->join('ref_dosen', 'trx_usulan_anggota_dosen.dosen_id', '=', 'ref_dosen.dosen_id')
+                        ->get(['dosen_nama_lengkap', 'ref_dosen.dosen_id']),
+                    'anggota_mhs' => DB::table('trx_usulan_anggota_mhs')->where('usulan_id', $usulan_id)
+                        ->join('ref_mahasiswa', 'trx_usulan_anggota_mhs.anggota_mhs_id', '=', 'ref_mahasiswa.mhs_id')
+                        ->get(['mhs_nama', 'ref_mahasiswa.mhs_id']),
+                ];
+            }
 
             return view('usulan.step1', compact('data'));
         } else if ($step == 2) {

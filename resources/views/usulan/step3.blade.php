@@ -1,7 +1,8 @@
 @extends('usulan.tambah_usulan')
 
 @section('step')
-    <form action="">
+    <form @if ($_GET['edit'] != '0') action="{{ url('update_step2') }}" @endif action="{{ url('step2') }}"
+        method="POST">
         <input type="hidden" name="usulan_id" value="{{ $_GET['usulan_id'] }}">
         <div class="container mb-1">
 
@@ -76,7 +77,8 @@
                                         <input type="hidden" name="id_file[{{ $key }}]">
                                         <input type="file" class="custom-file-input"
                                             accept="{{ $item->file_accepted_type }}" id="{{ $item->file_key }}"
-                                            name="inputFile[{{ $key }}]">
+                                            name="inputFile[{{ $key }}]"
+                                            @if ($item->is_required == '1') required @endif>
                                         <label class="custom-file-label" for="{{ $item->file_key }}">Choose file</label>
                                     </div>
                                 </div>
