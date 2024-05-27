@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class UpdateController extends Controller
 {
@@ -114,7 +115,70 @@ class UpdateController extends Controller
         return redirect("/tambah_usulan?&step=3&usulan_id=$usulan_id&edit=1");
     }
 
-    public function update_step2()
+    public function update_step2(Request $request)
     {
+        try {
+            //Delete berkas
+            $usulan_id = $request->usulan_id;
+            $get_usulan_file = DB::table('trx_usulan_file')->where('usulan_id', $usulan_id);
+            $deleted_file = $get_usulan_file->get(['file_name']);
+            foreach ($deleted_file as $key => $value) {
+                Storage::delete('public/trx_usulan_file/' . $value->file_name);
+            }
+            $get_usulan_file->delete();
+
+            //insert berkas
+            $input_file = $request->inputFile;
+            $file_id = $request->id_file;
+            foreach ($input_file as $key => $value) {
+                $file = $request->file($value);
+                $nama_file = date('Ymdhis') . '.' . $file->getClientOriginalExtension();
+                DB::table('trx_usulan_file')
+                    ->insert([
+                        'usulan_id' => $usulan_id,
+                        'skema_file_id' => $file_id[$key],
+                        'file_name' => $nama_file,
+                        'created_at' => now()
+                    ]);
+                $file->storeAs('public/trx_usulan_file', $nama_file);
+            }
+            // Delete Luaran Tambahan
+            DB::table('trx_usulan_luaran_tambahan')
+                ->where('usulan_id', $usulan_id)
+                ->delete();
+
+            // Insert Luaran Tambahan
+            $luaran = $request->luaran;
+            $target_luaran = $request->targetLuaran;
+            foreach ($luaran as $key => $value) {
+                DB::table('trx_usulan_luaran_tambahan')
+                    ->insert([
+                        'usulan_id' => $usulan_id,
+                        'luaran_tambahan_id' => $value,
+                        'luaran_tambahan_target' => $target_luaran[$key]
+                    ]);
+            }
+            // Delete IKU
+            DB::table('trx_usulan_IKU')
+                ->where('usulan_id', $usulan_id)
+                ->delete();
+
+            // Insert IKU
+            $iku = $request->iku;
+            $realisasi_iku = $request->realisasiIku;
+            foreach ($iku as $key => $value) {
+                DB::table('trx_usulan_iku')
+                    ->insert([
+                        'usulan_id' => $usulan_id,
+                        'iku_id' => $value,
+                        'iku_target' => $realisasi_iku[$key]
+                    ]);
+            }
+            toastr()->success('IKU berhasil di update');
+            return redirect('/');
+        } catch (\Throwable $th) {
+            toastr()->error('IKU Gagal di update');
+            return back();
+        }
     }
 }
