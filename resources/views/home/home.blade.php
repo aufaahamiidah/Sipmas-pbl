@@ -10,7 +10,7 @@
                             <h5 class="m-0"><b>Informasi</b> User</h5>
                         </div>
                         <div class="col d-flex justify-content-end">
-                            <button type="submit" class="btn btn-warning"><b>Edit Profil</b></button>
+                            <a href="{{ url('/edit_data') }}" class="btn btn-warning"><b>Edit Profil</b></a>
                         </div>
                     </div>
                 </div>
@@ -24,7 +24,8 @@
                                 <label>NIP</label>
                             </div>
                             <div class="col">
-                                <input type="text" class="form-control" placeholder="" disabled>
+                                <input type="text" class="form-control" placeholder="" value="{{ $data[0]['nip'][0] }}"
+                                    disabled>
                             </div>
                         </div>
                         <div class="row form-group-row mt-3">
@@ -32,7 +33,8 @@
                                 <label>Nama Lengkap</label>
                             </div>
                             <div class="col">
-                                <input type="text" class="form-control" placeholder="" disabled>
+                                <input type="text" class="form-control" placeholder=""
+                                    value="{{ $data[0]['dosen_nama_lengkap'][0] }}" disabled>
                             </div>
                         </div>
                         <div class="row form-group-row mt-3">
@@ -40,7 +42,8 @@
                                 <label>Email Polines</label>
                             </div>
                             <div class="col">
-                                <input type="text" class="form-control" placeholder="" disabled>
+                                <input type="text" class="form-control" placeholder=""
+                                    value="{{ $data[0]['dosen_email'][0] }}" disabled>
                             </div>
                         </div>
                         <div class="row form-group-row mt-3">
@@ -48,7 +51,8 @@
                                 <label>NIDN</label>
                             </div>
                             <div class="col">
-                                <input type="text" class="form-control" placeholder="" disabled>
+                                <input type="text" class="form-control" placeholder=""
+                                    value="{{ $data[0]['dosen_nidn'][0] }}" disabled>
                             </div>
                         </div>
                         <div class="row form-group-row mt-3">
@@ -56,7 +60,8 @@
                                 <label>Sinta ID</label>
                             </div>
                             <div class="col">
-                                <input type="text" class="form-control" placeholder="" disabled>
+                                <input type="text" class="form-control" placeholder=""
+                                    value="{{ $data[0]['dosen_sinta_id'][0] }}" disabled>
                             </div>
                         </div>
                     </form>

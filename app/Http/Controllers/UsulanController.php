@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Trx_usulan;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+
 
 class UsulanController extends Controller
 {
@@ -20,7 +22,7 @@ class UsulanController extends Controller
             $nama_skema  = DB::table('trx_skema')->where('trx_skema_id', $judul_usulan->trx_skema_id)->first();
             $id_ketua = DB::table("trx_usulan_anggota_dosen")->where("usulan_id", $value->usulan_id)->where("is_ketua", 1)->pluck('dosen_id');
             // $id_anggota_dosen = DB::table("trx_usulan_anggota_dosen")->where("usulan_id", $value->usulan_id)->where("is_ketua", 0)->pluck('dosen_id');
-            $status = DB::table('trx_usulan_status')->where('usulan_id', $value->usulan_id)->first();
+            // $status = DB::table('trx_usulan_status')->where('usulan_id', $value->usulan_id)->first();
 
             $data[$key] = [
                 "usulan_id" =>  $value->usulan_id,
@@ -31,9 +33,19 @@ class UsulanController extends Controller
                 "ketua" => DB::table('ref_dosen')->where('dosen_id', $id_ketua)->first(),
                 "count_pendanaan" => DB::table('trx_usulan_dana')->where('usulan_id', $value->usulan_id)->count(),
                 "pendanaan" => DB::table('trx_usulan_dana')->where('usulan_id', $value->usulan_id),
-                "status_id" => $status->status_id,
-                "anggota_dosen" => DB::table('trx_usulan_anggota_dosen')->where('is_ketua', 0)->where('usulan_id', $value->usulan_id)->pluck('dosen_id'),
-                "anggota_mhs" => DB::table('trx_usulan_anggota_mhs')->where('usulan_id', $value->usulan_id)->pluck('mhs_id')
+                "status_usulan" => DB::table('trx_usulan_status')
+                    ->join('ref_status', 'trx_usulan_status.status_id', '=', 'ref_status.status_id')
+                    ->where('usulan_id', $value->usulan_id)
+                    ->get(['trx_usulan_status.status_id', 'status_nama', 'status_color']),
+                "dosen_anggota" => DB::table('trx_usulan_anggota_dosen')
+                    ->join('ref_dosen', 'trx_usulan_anggota_dosen.dosen_id', '=', 'ref_dosen.dosen_id')
+                    ->where('is_ketua', 0)
+                    ->where('usulan_id', $value->usulan_id)
+                    ->get(['dosen_nama_lengkap', 'ref_dosen.dosen_id']),
+                "mhs_anggota" => DB::table('trx_usulan_anggota_mhs')
+                    ->join('ref_mahasiswa', 'trx_usulan_anggota_mhs.mhs_id', '=', 'ref_mahasiswa.mhs_id')
+                    ->where('usulan_id', $value->usulan_id)
+                    ->get(['mhs_nama', 'ref_mahasiswa.mhs_id']),
             ];
         }
         return $data;
@@ -95,16 +107,115 @@ class UsulanController extends Controller
             ]);
         }
 
-        return redirect('/');
+        return redirect("/tambah_usulan?&step=2&usulan_id=$usulan_id");
     }
-    public function step_1()
+    public function step_1(Request $request)
     {
+        $skema_id = DB::table('trx_usulan')
+            ->where('usulan_id', $request->usulan_id)->pluck('trx_skema_id')[0];
+        $total_pendanaan = DB::table('trx_skema_settings')
+            ->where('trx_skema_id', $skema_id)
+            ->where('setting_key', 'max_dana')
+            ->pluck('setting_value')[0];
+
+        $get_total_pendanaan = $request->total;
+        if ($get_total_pendanaan > $total_pendanaan) {
+            toastr()->error('Total dana tidak boleh lebih dari Rp.' . $total_pendanaan);
+            return back();
+        } else {
+            $skema_pendanaan = DB::table('trx_skema_pendanaan')
+                ->where('trx_skema_id', $skema_id)
+                ->get(['pendanaan_id', 'pendanaan_persentase']);
+            // Validasi
+            $count = 0;
+            foreach ($skema_pendanaan as $key => $value) {
+                $id_skema = $value->pendanaan_id;
+                $max_value = $value->pendanaan_persentase * $get_total_pendanaan;
+                $get_value = $request->$id_skema;
+                if ($get_value > $max_value) {
+                    toastr()->error('Melebihi persentase');
+                    return back();
+                } else {
+                    $count += $get_value;
+                }
+            }
+            // Insert Data
+            if ($count != $get_total_pendanaan) {
+                toastr()->error('Total Pendanaan dan Jumlah Detail Pendanaan tidak sesuai');
+                return back();
+            }
+            foreach ($skema_pendanaan as $key => $value) {
+                $id_skema = $value->pendanaan_id;
+                $get_value = $request->$id_skema;
+                DB::table('trx_usulan_dana')->insert([
+                    'usulan_id' => $request->usulan_id,
+                    'pendanaan_id' => $value->pendanaan_id,
+                    'pendanaan_value' => $get_value
+                ]);
+            }
+            DB::table('trx_usulan')
+                ->where('usulan_id', $request->usulan_id)
+                ->update([
+                    'usulan_pendanaan'  => $count
+                ]);
+            return redirect("/tambah_usulan?&step=3&usulan_id=$request->usulan_id");
+        }
     }
-    public function step_2()
+    public function step_2(Request $request)
     {
-    }
-    public function step_3()
-    {
+        $validator = Validator::make($request->all(), [
+            'proposal' => 'required|file|mimetypes:application/pdf,application/x-pdf',
+            'rab'   => 'required|file|mimetypes:application/pdf,application/x-pdf'
+        ]);
+
+        if ($validator->fails()) {
+            toastr()->error('Proposal dan RAB wajib diisi.');
+            return redirect()->back();
+        }
+
+        try {
+            $usulan_id = $request->usulan_id;
+            // Masukkan ke trx_usulan_luaran_tambahan
+            $luaran_tambahan = $request->input('luaran');
+            $target_luaran_tambahan = $request->input('targetLuaran');
+            foreach ($luaran_tambahan as $key => $value) {
+                DB::table('trx_usulan_tambahan')->insert([
+                    'usulan_id' => $usulan_id,
+                    'luaran_tambahan_id' => $value,
+                    'luaran_tambahan_target' => $target_luaran_tambahan[$key]
+                ]);
+            }
+
+            // Masukkan ke trx_usulan_iku
+            $iku = $request->input('iku');
+            $realisasiIku = $request('realisasiIku');
+            foreach ($iku as $key => $value) {
+                DB::table('trx_usulan_iku')->insert([
+                    'usulan_id' => $usulan_id,
+                    'iku_id'    => $value,
+                    'iku_target' => $realisasiIku[$key]
+                ]);
+            }
+
+            // Masukkan ke trx_usulan_file
+            $id_file = $request->input('id_file');
+            $inputFile = $request->input('inputFile');
+            foreach ($inputFile as $key => $value) {
+                $file = $request->file($value);
+                $nama_file = date('Ymdhis') . '.' . $file->getClientOriginalExtension();
+                DB::table('trx_usulan_file')
+                    ->insert([
+                        'usulan_id' => $usulan_id,
+                        'skema_file_id' => $id_file[$key],
+                        'file_name' => $nama_file,
+                        'created_at' => now(),
+                    ]);
+                $file->storeAs('public/trx_usulan_file', $nama_file);
+            }
+        } catch (\Throwable $th) {
+            toastr()->error('Terjadi masalah pada server. Data user gagal ditambahkan.');
+            return back();
+        }
     }
     public function index()
     {
@@ -115,26 +226,58 @@ class UsulanController extends Controller
     }
     public function tambahUsulan()
     {
-        $skema_id = $_GET['skema_id'];
         $step = $_GET['step'];
-
-        $skema = DB::table('trx_skema')->where('trx_skema_id', $skema_id)->first();
-        $skema_pendanaan = DB::table('trx_skema_pendanaan')->where('trx_skema_id', $skema_id)->get();
         $luaran_tambahan = DB::table('ref_luaran_tambahan')->get();
-        $ref_iku = DB::table('ref_iku')->where('jenis_skema_id', $skema_id);
+
         $data_dosen = DB::table('ref_dosen')->where('is_active', 1)->get();
         $data_mhs = DB::table('ref_mahasiswa')->get();
 
         $data = [
-            "skema_id" => $skema_id,
-            "skema_nama" => $skema->trx_skema_nama,
-            "skema_pendanaan" => $skema_pendanaan,
             "luaran_tambahan" => $luaran_tambahan,
-            "ref_iku" => $ref_iku,
             "step" => $step,
             "data_dosen" => $data_dosen,
             "data_mhs" => $data_mhs
         ];
-        return view('usulan.tambah_usulan', compact('data'));
+        if ($step == 1) {
+            $skema_id = $_GET['skema_id'];
+            $skema = DB::table('trx_skema')->where('trx_skema_id', $skema_id)->first();
+            $skema_pendanaan = DB::table('trx_skema_pendanaan')->where('trx_skema_id', $skema_id)->get();
+            $ref_iku = DB::table('ref_iku')->where('jenis_skema_id', $skema_id);
+
+            $data['skema_id'] = $skema_id;
+            $data['skema_nama'] = $skema->trx_skema_nama;
+            $data['skema_pendanaan'] = $skema_pendanaan;
+            $data['ref_iku'] = $ref_iku;
+
+            return view('usulan.step1', compact('data'));
+        } else if ($step == 2) {
+            $usulan_id = $_GET['usulan_id'];
+
+            $data['skema_id'] = DB::table('trx_usulan')->where('usulan_id', $usulan_id)->pluck('trx_skema_id')[0];
+            $data['max_dana'] = DB::table('trx_skema_settings')->where('trx_skema_id', $data['skema_id'])->where('setting_key', 'max_dana')->pluck('setting_value')[0];
+            $data['pendanaan'] = DB::table('trx_skema_pendanaan')->where('trx_skema_id', $data['skema_id'])->get(['pendanaan_id', 'pendanaan_nama', 'pendanaan_persentase']);
+            return view('usulan.step2', compact('data'));
+        } else if ($step == 3) {
+            $skema_id = DB::table('trx_usulan')
+                ->where('usulan_id', $_GET['usulan_id'])->pluck('trx_skema_id')[0];
+            $data['trx_luaran_tambahan'] = DB::table('trx_skema_luaran_tambahan')
+                ->join('ref_luaran_tambahan', 'trx_skema_luaran_tambahan.luaran_tambahan_id', '=', 'ref_luaran_tambahan.luaran_tambahan_id')
+                ->where('trx_skema_luaran_tambahan.trx_skema_id', $skema_id)
+                ->where('ref_luaran_tambahan.is_aktif', 1)
+                ->get(['ref_luaran_tambahan.luaran_tambahan_id', 'luaran_tambahan_nama']);
+            $data['ref_iku'] = DB::table('ref_iku')
+                ->where('jenis_skema_id', $skema_id)
+                ->where('is_active', 1)
+                ->get();
+            $data['skema_file'] = DB::table('trx_skema_file')
+                ->where('trx_skema_id', $skema_id)
+                ->where('is_active', 1)
+                ->get(['skema_file_id', 'file_key', 'file_caption', 'file_accepted_type', 'is_required']);
+            return view('usulan.step3', compact('data'));
+        }
+    }
+    public function detail()
+    {
+        return view('usulan.detail');
     }
 }

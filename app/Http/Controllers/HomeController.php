@@ -28,11 +28,20 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $data_dosen = DB::table('ref_dosen')->where('dosen_email_polines', Auth::user()->email)->get()->count();
+        $get_dosen = DB::table('ref_dosen')->where('dosen_email_polines', Auth::user()->email);
+        $data_dosen = $get_dosen->count();
+
+        $data[] = [
+            'nip' => $get_dosen->pluck('dosen_id'),
+            'dosen_nama_lengkap' => $get_dosen->pluck('dosen_nama_lengkap'),
+            'dosen_email' => $get_dosen->pluck('dosen_email_polines'),
+            'dosen_nidn' => $get_dosen->pluck('dosen_nidn'),
+            'dosen_sinta_id' => $get_dosen->pluck('dosen_sinta_id'),
+        ];
 
         // Jika data user ada di ref_dosen, maka akan dialihkan ke home dashboard
         if ($data_dosen > 0) {
-            return view('home.home');
+            return view('home.home', compact('data'));
         }
 
         session()->flash("warningMsg", "Data anda belum terdaftar di data dosen. Silahkan isi form berikut untuk mengakses penuh halaman dashboard (Minimal isi form yang bertanda *).");
