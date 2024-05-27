@@ -1,7 +1,8 @@
 @extends('usulan.tambah_usulan')
 
 @section('step')
-    <form @if ($_GET['usulan_id'] != '') action=""  @else action="{{ url('step_0') }}" @endif method="POST">
+    <form @if ($_GET['usulan_id'] != '') action="{{ url('update_step0') }}"  @else action="{{ url('step_0') }}" @endif
+        method="POST">
         @csrf
         <div class="container mb-1">
             <div class="card card-danger">
@@ -33,7 +34,11 @@
                                     <div class="col">
                                         <input type="hidden" name="skema_id" id="skema_id" class="form-control"
                                             value="{{ $data['skema_id'] }}">
+                                        @if ($_GET['usulan_id'] != '')
+                                            <input type="hidden" name="usulan_id" value="{{ $_GET['usulan_id'] }}">
+                                        @endif
                                         <input type="text" name="skemaid" class="form-control"
+                                            @if ($_GET['usulan_id'] != '') value="{{ $data['data_usulan']['skema'][0]->trx_skema_nama }}" @endif
                                             value="{{ $data['skema_nama'] }}" disabled>
                                     </div>
                                 </div>
@@ -43,7 +48,7 @@
                                     </div>
                                     <div class="col">
                                         <input type="text" class="form-control" name="judul" id="judul" required
-                                            @if ($_GET['usulan_id'] != '') disabled @endif>
+                                            @if ($_GET['usulan_id'] != '') value="{{ $data['data_usulan']['usulan'][0]->usulan_judul }}" @endif>
                                     </div>
                                 </div>
                                 <div class="row form-group-row mt-3">
@@ -51,7 +56,12 @@
                                         <label>Abstrak <b class="text-danger">*</b></label>
                                     </div>
                                     <div class="col">
-                                        <textarea @if ($_GET['usulan_id'] != '') disabled @endif class="form-control" id="abstrak" name="abstrak" required></textarea>
+                                        <textarea style="min-height: 250px;" @if ($_GET['usulan_id'] != '')  @endif class="form-control" id="abstrak"
+                                            name="abstrak" required>
+@if ($_GET['usulan_id'] != '')
+{{ $data['data_usulan']['usulan'][0]->usulan_abstrak }}
+@endif
+</textarea>
                                     </div>
                                 </div>
                             </form>
@@ -88,23 +98,48 @@
                                         </tr>
                                     </thead>
                                     <tbody id="isiDosen">
-                                        <tr>
-                                            <td colspan="2">
-                                                <select class="custom-select" name="anggota_dosen[0]">
-                                                    <option selected>Pilih Dosen</option>
-                                                    @foreach ($data['data_dosen'] as $item)
-                                                        <option value="{{ $item->dosen_id }}">
-                                                            ({{ $item->dosen_id }})
-                                                            {{ $item->dosen_nama_lengkap }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </td>
-                                        </tr>
+                                        @if ($_GET['usulan_id'] != '')
+                                            @foreach ($data['data_usulan']['anggota_dosen'] as $key => $value)
+                                                <tr>
+                                                    <td colspan="2">
+
+                                                        <select class="custom-select"
+                                                            name="anggota_dosen[{{ $key }}]">
+                                                            <option selected value="{{ $value->dosen_id }}">
+                                                                {{ $value->dosen_nama_lengkap }}
+                                                            </option>
+                                                            @foreach ($data['data_dosen'] as $item)
+                                                                <option value="{{ $item->dosen_id }}">
+                                                                    ({{ $item->dosen_id }})
+                                                                    {{ $item->dosen_nama_lengkap }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        @else
+                                            <tr>
+                                                <td colspan="2">
+                                                    <select class="custom-select" name="anggota_dosen[0]">
+                                                        <option selected>Pilih Dosen</option>
+                                                        @foreach ($data['data_dosen'] as $item)
+                                                            <option value="{{ $item->dosen_id }}">
+                                                                ({{ $item->dosen_id }})
+                                                                {{ $item->dosen_nama_lengkap }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        @endif
                                     </tbody>
                                 </table>
                             </div>
 
                             <div>
+
                                 <table class="table table-bordered" id="tableDosen">
                                     <thead>
                                         <tr>
@@ -119,16 +154,39 @@
                                         </tr>
                                     </thead>
                                     <tbody id="isiMhs">
-                                        <td colspan="2">
-                                            <select class="custom-select" name="anggota_mhs[0]">
-                                                <option selected>Pilih Mahasiswa</option>
-                                                @foreach ($data['data_mhs'] as $item)
-                                                    <option value="{{ $item->mhs_id }}">
-                                                        ({{ $item->mhs_id }})
-                                                        {{ $item->mhs_nama }}</option>
-                                                @endforeach
-                                            </select>
-                                        </td>
+                                        @if ($_GET['usulan_id'] != '')
+                                            @foreach ($data['data_usulan']['anggota_mhs'] as $key => $value)
+                                                <tr>
+                                                    <td colspan="2">
+                                                        <select class="custom-select"
+                                                            name="anggota_mhs[{{ $key }}]">
+                                                            <option selected value="{{ $value->mhs_id }}">
+                                                                {{ $value->mhs_nama }}
+                                                            </option>
+                                                            @foreach ($data['data_dosen'] as $item)
+                                                                <option value="{{ $item->mhs_id }}">
+                                                                    ({{ $item->mhs_id }})
+                                                                    {{ $item->mhs_nama }}
+                                                                </option>
+                                                            @endforeach
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        @else
+                                            <tr>
+                                                <td colspan="2">
+                                                    <select class="custom-select" name="anggota_mhs[0]">
+                                                        <option selected>Pilih Mahasiswa</option>
+                                                        @foreach ($data['data_mhs'] as $item)
+                                                            <option value="{{ $item->mhs_id }}">
+                                                                ({{ $item->mhs_id }})
+                                                                {{ $item->mhs_nama }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        @endif
                                     </tbody>
                                 </table>
                             </div>
