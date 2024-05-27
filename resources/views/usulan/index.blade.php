@@ -91,14 +91,16 @@
                                                 <li><b> *Ketua</b> {{ $item['ketua']->dosen_nama }}
                                                     ({{ $item['ketua']->dosen_id }})
                                                 </li>
-                                                @foreach ($item['anggota_dosen'] as $val)
+                                                <br>
+                                                @foreach ($item['dosen_anggota'] as $val)
                                                     <li>
-                                                        {{ $val }}
+                                                        {{ $val->dosen_nama_lengkap }} ({{ $val->dosen_id }})
                                                     </li>
                                                 @endforeach
-                                                @foreach ($item['anggota_mhs'] as $val)
+                                                <br>
+                                                @foreach ($item['mhs_anggota'] as $val)
                                                     <li>
-                                                        {{ $val }}
+                                                        {{ $val->mhs_nama }} ({{ $val->mhs_id }})
                                                     </li>
                                                 @endforeach
                                             </ul>
@@ -112,10 +114,11 @@
 
                                         </td>
                                         <td>
-                                            {{ $item['status_id'] }}
+                                            <span
+                                                class="text-{{ $item['status_usulan'][0]->status_color }}">{{ $item['status_usulan'][0]->status_nama }}</span>
                                         </td>
                                         <td>
-                                            @if ($item['status_id'] < 2)
+                                            @if ($item['status_usulan'][0]->status_id == 1)
                                                 <a href="{{ url('/tambah_usulan') }}?skema_id={{ $item['skema_id'] }}&step=1&usulan_id={{ $item['usulan_id'] }}"
                                                     class="btn btn-warning">Edit Usulan</a>
                                             @else
