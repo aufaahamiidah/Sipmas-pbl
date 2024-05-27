@@ -163,16 +163,6 @@ class UsulanController extends Controller
     }
     public function step_2(Request $request)
     {
-        // $validator = Validator::make($request->all(), [
-        //     'proposal' => 'required|file|mimetypes:application/pdf,application/x-pdf',
-        //     'rab'   => 'required|file|mimetypes:application/pdf,application/x-pdf'
-        // ]);
-
-        // if ($validator->fails()) {
-        //     toastr()->error('Dokumen wajib diisi.');
-        //     return redirect()->back();
-        // }
-
         try {
             $usulan_id = $request->usulan_id;
             // Masukkan ke trx_usulan_luaran_tambahan
@@ -258,7 +248,7 @@ class UsulanController extends Controller
                         ->join('trx_skema', 'trx_usulan.trx_skema_id', '=', 'trx_skema.trx_skema_id')
                         ->get('trx_skema.trx_skema_nama'),
                     'usulan' => DB::table('trx_usulan')->where('usulan_id', $usulan_id)->get(['usulan_judul', 'usulan_abstrak']),
-                    'anggota_dosen' => DB::table('trx_usulan_anggota_dosen')->where('usulan_id', $usulan_id)
+                    'anggota_dosen' => DB::table('trx_usulan_anggota_dosen')->where('usulan_id', $usulan_id)->where('is_ketua', 0)
                         ->join('ref_dosen', 'trx_usulan_anggota_dosen.dosen_id', '=', 'ref_dosen.dosen_id')
                         ->get(['dosen_nama_lengkap', 'ref_dosen.dosen_id']),
                     'anggota_mhs' => DB::table('trx_usulan_anggota_mhs')->where('usulan_id', $usulan_id)
@@ -277,10 +267,11 @@ class UsulanController extends Controller
 
             if ($_GET['edit'] == 1) {
                 $data['total_pendanaan'] = DB::table('trx_usulan')
-                    ->where('usulan_id', $usulan_id)->get(['usulan_pendanaan']);
+                    ->where('usulan_id', $usulan_id)
+                    ->get('usulan_pendanaan');
                 $data['detail_pendanaan'] = DB::table('trx_usulan_dana')
                     ->where('usulan_id', $usulan_id)
-                    ->get(['pendanaan_id', 'pendanaan_value']);
+                    ->get(['pendanaan_value']);
             }
 
             return view('usulan.step2', compact('data'));
@@ -319,7 +310,7 @@ class UsulanController extends Controller
                         'trx_usulan_iku.iku_target'
                     ]);
                 $data['berkas'] = DB::table('trx_usulan_file')
-                    ->join('trx_skema_file', 'trx_usulan_file.skema_file.id', '=', 'trx_skema_file.skema_file_id')
+                    ->join('trx_skema_file', 'trx_usulan_file.skema_file_id', '=', 'trx_skema_file.skema_file_id')
                     ->where('trx_usulan_file.usulan_id', $usulan_id)
                     ->get([
                         'trx_usulan_file.skema_file_id',
@@ -331,6 +322,79 @@ class UsulanController extends Controller
     }
     public function detail()
     {
-        return view('usulan.detail');
+        $usulan_id = $_GET['usulan_id'];
+
+        // Data Penelitian
+        $data_penelitian = DB::table('trx_usulan')
+            ->join('trx_skema', 'trx_usulan.trx_skema_id', '=', 'trx_skema.trx_skema_id')
+            ->where('usulan_id', $usulan_id)->get(['trx_skema_nama', 'usulan_judul', 'usulan_abstrak']);
+
+        // Capaian
+        $luaran_wajib = DB::table('trx_usulan_luaran_wajib')
+            ->join('ref_luaran_wajib', 'trx_usulan_luaran_wajib.luaran_wajib_id', '=', 'ref_luaran_wajib.luaran_id')
+            ->where('usulan_id', $usulan_id)
+            ->get(['luaran_wajib_nama', 'luaran_wajib_deskripsi']);
+        $luaran_tambahan = DB::table('trx_usulan_luaran_tambahan')
+            ->join('ref_luaran_tambahan', 'trx_usulan_luaran_tambahan.luaran_tambahan_id', '=', 'ref_luaran_tambahan.luaran_tambahan_id')
+            ->where('usulan_id', $usulan_id)
+            ->get(['luaran_tambahan_nama', 'luaran_tambahan_target']);
+        $iku = DB::table('trx_usulan_iku')
+            ->join('ref_iku', 'trx_usulan_iku.iku_id', '=', 'ref_iku.iku_id')
+            ->where('usulan_id', $usulan_id)
+            ->get(['iku_nama', 'trx_usulan_iku.iku_target', 'iku_bukti']);
+
+        // Anggota
+        $dosen = DB::table('trx_usulan_anggota_dosen')
+            ->join('ref_dosen', 'trx_usulan_anggota_dosen.dosen_id', '=', 'ref_dosen.dosen_id')
+            ->where('usulan_id', $usulan_id);
+        $dosen_ketua = $dosen->where('is_ketua', 1)->get(['dosen_nama_lengkap', 'is_verified']);
+        $dosen_anggota = $dosen->where('is_ketua', 0)->get(['dosen_nama_lengkap', 'is_verified']);
+        $mahasiswa = DB::table('trx_usulan_anggota_mhs')
+            ->join('ref_mahasiswa', 'trx_usulan_anggota_mhs.mhs_id', '=', 'ref_mahasiswa.mhs_id')
+            ->join('ref_prodi', 'ref_mahasiswa.prodi_id', '=', 'ref_prodi.prodi_id')
+            ->where('usulan_id', $usulan_id)
+            ->get(['ref_mahasiswa.mhs_id', 'mhs_nama', 'prodi_nama', 'prodi_jenjang']);
+
+        // Berkas Usulan
+        $berkas = DB::table('trx_usulan_file')
+            ->join('trx_skema_file', 'trx_usulan_file.skema_file_id', '=', 'trx_skema_file.skema_file_id')
+            ->where('usulan_id', $usulan_id)
+            ->get(['file_caption', 'file_name', 'file_status']);
+
+        // Komponen Pendanaan
+        $total_pendanaan = DB::table('trx_usulan')
+            ->where('usulan_id', $usulan_id)->get('usulan_pendanaan');
+        $detail_pendanaan = DB::table('trx_usulan_dana')
+            ->join('trx_skema_pendanaan', 'trx_usulan_dana.pendanaan_id', '=', 'trx_skema_pendanaan.pendanaan_id')
+            ->where('usulan_id', $usulan_id)
+            ->get(['pendanaan_value', 'pendanaan_nama', 'pendanaan_persentase']);
+
+        // Compress Data
+        $DataPenelitian = $data_penelitian;
+        $Capaian = [
+            'luaran_wajib' => $luaran_wajib,
+            'luaran_tambahan' => $luaran_tambahan,
+            'iku' => $iku
+        ];
+        $Anggota = [
+            'dosen_ketua' => $dosen_ketua,
+            'dosen_anggota' => $dosen_anggota,
+            'mahasiswa' => $mahasiswa
+        ];
+        $BerkasUsulan = $berkas;
+        $KomponenPendanaan = [
+            'total_pendanaan' => $total_pendanaan,
+            'detail_pendanaan' => $detail_pendanaan
+        ];
+
+        $data = [
+            'data_penelitian' => $DataPenelitian,
+            'capaian'         => $Capaian,
+            'anggota'         => $Anggota,
+            'berkas_usulan'   => $BerkasUsulan,
+            'komponen_pendanaan' => $KomponenPendanaan
+        ];
+
+        return view('usulan.detail', compact('data'));
     }
 }
