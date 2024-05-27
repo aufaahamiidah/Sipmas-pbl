@@ -123,7 +123,10 @@
                                                     class="btn btn-warning">Edit Usulan</a>
                                             @else
                                                 <button class="btn btn-warning" disabled>Edit Usulan</button>
+    
                                             @endif
+
+                                            <a href="{{url('/detail_usulan')}}" class="btn btn-primary d-flex justify-content-center">Detail</a>
                                         </td>
                                     </tr>
                                 @endforeach
