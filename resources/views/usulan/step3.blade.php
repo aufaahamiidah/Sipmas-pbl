@@ -29,7 +29,27 @@
                                             </tr>
                                         </thead>
                                         <tbody id="isiLuaran">
-
+                                            @if ($_GET['edit'] != '')
+                                                @foreach ($data['luaran_tambahan'] as $key => $value)
+                                                    <tr>
+                                                        <td colspan="2">
+                                                            <select class="custom-select"
+                                                                name="luaran[{{ $key }}]">
+                                                                <option selected value="{{ $value->luaran_tambahan_nama }}">
+                                                                    {{ $value->luaran_tambahan_nama }}</option>
+                                                                @foreach ($data['trx_luaran_tambahan'] as $item)
+                                                                    <option value="{{ $value->luaran_tambahan_id }}">
+                                                                        {{ $item->luaran_tambahan_nama }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                            <input type="text" name="targetLuaran[{{ $key }}]"
+                                                                class="form-control" placeholder="Luaran Tambahan Target"
+                                                                aria-describedby="addon-wrapping"
+                                                                value="{{ $value->luaran_tambahan_target }}">
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            @endif
                                         </tbody>
                                     </table>
                                 </div>
@@ -51,7 +71,27 @@
                                             </tr>
                                         </thead>
                                         <tbody id="isiIku">
-
+                                            @if ($_GET['edit'] != '')
+                                                @foreach ($data['iku'] as $key => $value)
+                                                    <tr>
+                                                        <td colspan="2">
+                                                            <select class="custom-select" name="iku[{{ $key }}]">
+                                                                <option selected value="{{ $value->iku_nama }}">
+                                                                    {{ $value->iku_nama }}
+                                                                </option>
+                                                                @foreach ($data['ref_iku'] as $item)
+                                                                    <option value="{{ $item->iku_id }}">
+                                                                        {{ $item->iku_nama }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                            <input type="text" name="realisasiIku[{{ $key }}]"
+                                                                class="form-control" placeholder="Luaran Tambahan Target"
+                                                                aria-describedby="addon-wrapping"
+                                                                value="{{ $value->iku_target }}">
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            @endif
                                         </tbody>
                                     </table>
                                 </div>
