@@ -77,7 +77,7 @@ class UpdateController extends Controller
         $total = $request->total;
 
         //validasi 1
-        if ($total . $max_value) {
+        if ($total > $max_value) {
             toastr()->error('Total dana melebihi ' . $max_value);
             return back();
         }
@@ -86,6 +86,7 @@ class UpdateController extends Controller
             ->where('trx_skema_id', $skema_id)
             ->get(['pendanaan_id', 'pendanaan_persentase']);
 
+        $tampung_value = 0;
         foreach ($skema_pendanaan as $key => $value) {
             $id_skema = $value->pendanaan_id;
             $persentase = $value->pendanaan_persentase;
@@ -93,25 +94,39 @@ class UpdateController extends Controller
             if ($request->$id_skema > $max_value) {
                 toastr()->error('Dana melebihi anggaran');
                 return back();
+            } else {
+                $tampung_value += $request->$id_skema;
             }
         }
         // Validasi 3
-        $tampung_value = 0;
-        foreach ($skema_pendanaan as $key => $value) {
-            $tampung_value += $request->$value->pendanaan_id;
-        }
-        if ($tampung_value != $request->$total) {
+        if ($tampung_value != $total) {
             toastr()->error('Dana tidak sesuai dengan total dana');
             return back();
         }
 
-        //delete
+        //delete trx_usulan_dana
         DB::table('trx_usulan_dana')
-            ->insert([
+            ->where('usulan_id', $usulan_id)
+            ->delete();
+
+        // Insert trx_usulan_dana
+        foreach ($skema_pendanaan as $key => $value) {
+            $id_skema = $value->pendanaan_id;
+            $get_value = $request->$id_skema;
+            DB::table('trx_usulan_dana')->insert([
                 'usulan_id' => $usulan_id,
                 'pendanaan_id' => $value->pendanaan_id,
-                'pendanaan_value' => $request->$value->pendanaan_id
+                'pendanaan_value' => $get_value
             ]);
+        }
+
+        // Update pendanaan_value trx_usulan
+        DB::table('trx_usulan')
+            ->where('usulan_id', $usulan_id)
+            ->update([
+                'usulan_pendanaan'  => $tampung_value
+            ]);
+
         toastr()->success('Berhasil update dana');
         return redirect("/tambah_usulan?&step=3&usulan_id=$usulan_id&edit=1");
     }
@@ -128,52 +143,53 @@ class UpdateController extends Controller
             }
             $get_usulan_file->delete();
 
-            //insert berkas
-            $input_file = $request->inputFile;
-            $file_id = $request->id_file;
-            foreach ($input_file as $key => $value) {
-                $file = $request->file($value);
-                $nama_file = date('Ymdhis') . '.' . $file->getClientOriginalExtension();
+            // Masukkan ke trx_usulan_file
+            $id_file = $request->id_file;
+            $namaFile = $request->inputFile;
+
+            $inputFile = $request->file('inputFile');
+            foreach ($inputFile as $key => $value) {
+                $nama_file = date('Ymdhis') . '.' . $value->getClientOriginalExtension();
                 DB::table('trx_usulan_file')
                     ->insert([
                         'usulan_id' => $usulan_id,
-                        'skema_file_id' => $file_id[$key],
-                        'file_name' => $nama_file,
-                        'created_at' => now()
+                        'skema_file_id' => $id_file[$key],
+                        'file_name' => $namaFile[$key],
+                        'created_at' => now(),
                     ]);
-                $file->storeAs('public/trx_usulan_file', $nama_file);
+                $value->storeAs('public/trx_usulan_file', $nama_file);
             }
+
             // Delete Luaran Tambahan
             DB::table('trx_usulan_luaran_tambahan')
                 ->where('usulan_id', $usulan_id)
                 ->delete();
 
-            // Insert Luaran Tambahan
-            $luaran = $request->luaran;
-            $target_luaran = $request->targetLuaran;
-            foreach ($luaran as $key => $value) {
-                DB::table('trx_usulan_luaran_tambahan')
-                    ->insert([
-                        'usulan_id' => $usulan_id,
-                        'luaran_tambahan_id' => $value,
-                        'luaran_tambahan_target' => $target_luaran[$key]
-                    ]);
+            // Masukkan ke trx_usulan_luaran_tambahan
+            $luaran_tambahan = $request->input('luaran');
+            $target_luaran_tambahan = $request->input('targetLuaran');
+            foreach ($luaran_tambahan as $key => $value) {
+                DB::table('trx_usulan_luaran_tambahan')->insert([
+                    'usulan_id' => $usulan_id,
+                    'luaran_tambahan_id' => $value,
+                    'luaran_tambahan_target' => $target_luaran_tambahan[$key]
+                ]);
             }
+
             // Delete IKU
             DB::table('trx_usulan_IKU')
                 ->where('usulan_id', $usulan_id)
                 ->delete();
 
-            // Insert IKU
-            $iku = $request->iku;
-            $realisasi_iku = $request->realisasiIku;
+            // Masukkan ke trx_usulan_iku
+            $iku = $request->input('iku');
+            $realisasiIku = $request->realisasiIku;
             foreach ($iku as $key => $value) {
-                DB::table('trx_usulan_iku')
-                    ->insert([
-                        'usulan_id' => $usulan_id,
-                        'iku_id' => $value,
-                        'iku_target' => $realisasi_iku[$key]
-                    ]);
+                DB::table('trx_usulan_iku')->insert([
+                    'usulan_id' => $usulan_id,
+                    'iku_id'    => $value,
+                    'iku_target' => $realisasiIku[$key]
+                ]);
             }
             toastr()->success('IKU berhasil di update');
             return redirect('/');

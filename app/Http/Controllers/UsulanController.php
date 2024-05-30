@@ -169,7 +169,7 @@ class UsulanController extends Controller
             $luaran_tambahan = $request->input('luaran');
             $target_luaran_tambahan = $request->input('targetLuaran');
             foreach ($luaran_tambahan as $key => $value) {
-                DB::table('trx_usulan_tambahan')->insert([
+                DB::table('trx_usulan_luaran_tambahan')->insert([
                     'usulan_id' => $usulan_id,
                     'luaran_tambahan_id' => $value,
                     'luaran_tambahan_target' => $target_luaran_tambahan[$key]
@@ -178,7 +178,7 @@ class UsulanController extends Controller
 
             // Masukkan ke trx_usulan_iku
             $iku = $request->input('iku');
-            $realisasiIku = $request('realisasiIku');
+            $realisasiIku = $request->realisasiIku;
             foreach ($iku as $key => $value) {
                 DB::table('trx_usulan_iku')->insert([
                     'usulan_id' => $usulan_id,
@@ -188,31 +188,36 @@ class UsulanController extends Controller
             }
 
             // Masukkan ke trx_usulan_file
-            $id_file = $request->input('id_file');
-            $inputFile = $request->input('inputFile');
+            $id_file = $request->id_file;
+            $namaFile = $request->inputFile;
+
+            $inputFile = $request->file('inputFile');
             foreach ($inputFile as $key => $value) {
-                $file = $request->file($value);
-                $nama_file = date('Ymdhis') . '.' . $file->getClientOriginalExtension();
+                $nama_file = date('Ymdhis') . '.' . $value->getClientOriginalExtension();
                 DB::table('trx_usulan_file')
                     ->insert([
                         'usulan_id' => $usulan_id,
                         'skema_file_id' => $id_file[$key],
-                        'file_name' => $nama_file,
+                        'file_name' => $namaFile[$key],
                         'created_at' => now(),
                     ]);
-                $file->storeAs('public/trx_usulan_file', $nama_file);
+                $value->storeAs('public/trx_usulan_file', $nama_file);
             }
 
-            // Luaran Wajib
+            // Get skema id
             $get_Skema = DB::table('trx_usulan')->where('usulan_id', $usulan_id)->get('trx_skema_id');
-            $get_lwajib = DB::table('trx_skema_luaran_wajib')
-                ->where('trx_skema_id', $get_Skema->trx_skema_id)
+
+            // Get Luaran Wajib
+            $luaran_wajib = DB::table('trx_skema_luaran_wajib')
+                ->where('trx_skema_id', $get_Skema[0]->trx_skema_id)
                 ->get('luaran_wajib_id');
-            foreach ($get_lwajib->luaran_wajib_id as $key => $value) {
+
+            // Insert Luaran Wajib ke
+            foreach ($luaran_wajib as $key => $value) {
                 DB::table('trx_usulan_luaran_wajib')
                     ->insert([
                         'usulan_id' => $usulan_id,
-                        'luaran_wajib_id' => $value,
+                        'luaran_wajib_id' => $value->luaran_wajib_id,
                     ]);
             }
 
@@ -279,7 +284,7 @@ class UsulanController extends Controller
             $data['max_dana'] = DB::table('trx_skema_settings')->where('trx_skema_id', $data['skema_id'])->where('setting_key', 'max_dana')->pluck('setting_value')[0];
             $data['pendanaan'] = DB::table('trx_skema_pendanaan')->where('trx_skema_id', $data['skema_id'])->get(['pendanaan_id', 'pendanaan_nama', 'pendanaan_persentase']);
 
-            if ($_GET['edit'] == 1) {
+            if ($_GET['edit'] == '1') {
                 $data['total_pendanaan'] = DB::table('trx_usulan')
                     ->where('usulan_id', $usulan_id)
                     ->get('usulan_pendanaan');

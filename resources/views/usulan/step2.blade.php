@@ -22,7 +22,8 @@
                             <label>Total Pendanaan <span style="color: red">*</span></label>
                         </div>
                         <div class="col">
-                            <input type="number" name="total" class="form-control" placeholder="" required>
+                            <input type="number" name="total" class="form-control" placeholder="" required
+                                @if ($_GET['edit'] != '') value="{{ $data['total_pendanaan'][0]->usulan_pendanaan }}" @endif>
                             <p><b>maksimal Rp. {{ $data['max_dana'] }}</b></p>
                         </div>
                     </div>
@@ -35,7 +36,8 @@
                             </div>
                             <div class="col">
                                 <input name="{{ $value->pendanaan_id }}" type="number" class="form-control" placeholder=""
-                                    required>
+                                    required
+                                    @if ($_GET['edit'] != '') value="{{ $data['detail_pendanaan'][$key]->pendanaan_value }}" @endif>
                             </div>
                         </div>
                     @endforeach
