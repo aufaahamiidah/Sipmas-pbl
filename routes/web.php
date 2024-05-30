@@ -55,6 +55,6 @@ Route::post('/step_0', [UsulanController::class, 'step_0']);
 Route::post('/step_1', [UsulanController::class, 'step_1']);
 Route::post('/step_2', [UsulanController::class, 'step_2']);
 
-Route::post('/update_step0', [UpdateController::class, 'update_step0']);
-Route::post('/update_step2', [UpdateController::class, 'update_step1']);
-Route::post('/update_step2', [UpdateController::class, 'update_step2']);
+Route::post('/update_step0', [UpdateController::class, 'step0']);
+Route::post('/update_step1', [UpdateController::class, 'step1']);
+Route::post('/update_step2', [UpdateController::class, 'step2']);

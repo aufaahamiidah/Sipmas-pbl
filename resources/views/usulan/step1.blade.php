@@ -1,8 +1,7 @@
 @extends('usulan.tambah_usulan')
 
 @section('step')
-    <form @if ($_GET['usulan_id'] != '') action="{{ url('update_step0') }}"  @else action="{{ url('step_0') }}" @endif
-        method="POST">
+    <form method="POST" @if ($_GET['usulan_id'] != '') action="update_step0"  @else action="{{ url('step_0') }}" @endif>
         @csrf
         <div class="container mb-1">
             <div class="card card-danger">
@@ -163,7 +162,7 @@
                                                             <option selected value="{{ $value->mhs_id }}">
                                                                 {{ $value->mhs_nama }}
                                                             </option>
-                                                            @foreach ($data['data_dosen'] as $item)
+                                                            @foreach ($data['data_mhs'] as $item)
                                                                 <option value="{{ $item->mhs_id }}">
                                                                     ({{ $item->mhs_id }})
                                                                     {{ $item->mhs_nama }}

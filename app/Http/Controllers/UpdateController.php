@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 
 class UpdateController extends Controller
 {
-    public function update_step0(Request $request)
+    public function step0(Request $request)
     {
         try {
             $this->validate($request, [
@@ -22,7 +22,7 @@ class UpdateController extends Controller
                 ->where('usulan_id', $usulan_id)
                 ->update([
                     'usulan_judul' => $request->judul,
-                    'abstrak'      => $request->abstrak
+                    'usulan_abstrak'      => $request->abstrak
                 ]);
 
             //Hapus data dosen terlebih dahulu
@@ -60,10 +60,11 @@ class UpdateController extends Controller
             return redirect("/tambah_usulan?&step=2&usulan_id=$usulan_id&edit=1");
         } catch (\Throwable $th) {
             toastr()->error('Gagal mengupdate data');
+            return back();
         }
     }
 
-    public function update_step1(Request $request)
+    public function step1(Request $request)
     {
         $usulan_id = $request->usulan_id;
         $skema_id = DB::table('trx_usulan')
@@ -115,7 +116,7 @@ class UpdateController extends Controller
         return redirect("/tambah_usulan?&step=3&usulan_id=$usulan_id&edit=1");
     }
 
-    public function update_step2(Request $request)
+    public function step2(Request $request)
     {
         try {
             //Delete berkas

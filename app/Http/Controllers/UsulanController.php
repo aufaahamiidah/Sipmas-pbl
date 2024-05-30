@@ -266,7 +266,7 @@ class UsulanController extends Controller
                         ->join('ref_dosen', 'trx_usulan_anggota_dosen.dosen_id', '=', 'ref_dosen.dosen_id')
                         ->get(['dosen_nama_lengkap', 'ref_dosen.dosen_id']),
                     'anggota_mhs' => DB::table('trx_usulan_anggota_mhs')->where('usulan_id', $usulan_id)
-                        ->join('ref_mahasiswa', 'trx_usulan_anggota_mhs.anggota_mhs_id', '=', 'ref_mahasiswa.mhs_id')
+                        ->join('ref_mahasiswa', 'trx_usulan_anggota_mhs.mhs_id', '=', 'ref_mahasiswa.mhs_id')
                         ->get(['mhs_nama', 'ref_mahasiswa.mhs_id']),
                 ];
             }
@@ -285,7 +285,7 @@ class UsulanController extends Controller
                     ->get('usulan_pendanaan');
                 $data['detail_pendanaan'] = DB::table('trx_usulan_dana')
                     ->where('usulan_id', $usulan_id)
-                    ->get(['pendanaan_value']);
+                    ->get('pendanaan_value');
             }
 
             return view('usulan.step2', compact('data'));
