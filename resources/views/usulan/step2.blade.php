@@ -1,8 +1,8 @@
 @extends('usulan.tambah_usulan')
 
 @section('step')
-    <form @if ($_GET['edit'] != '') action="{{ url('update_step1') }}" @endif action="{{ url('step1') }}"
-        method="POST">
+    <form method="POST" @if ($_GET['edit'] != '') action="{{ url('update_step1') }}" @endif
+        action="{{ url('step_1') }}">
         @csrf
         <input type="hidden" name="usulan_id" value="{{ $_GET['usulan_id'] }}">
         <div class="container mb-1">
