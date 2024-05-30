@@ -55,5 +55,190 @@
         </div>
     </div>
 
+<<<<<<< HEAD
+                                <div>
+                                    <table class="table table-bordered" id="tableDosen">
+                                        <thead>
+                                            <tr>
+                                                <th colspan="2" class="bg-success text-center">Mahasiswa</th>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-center col-2">
+                                                    <button type="button" class="btn btn-success"
+                                                        onclick="addMhs()"><b>+</b></button>
+                                                </th>
+                                                <th class="text-center col-10">Nama Mahasiswa</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="isiMhs">
+                                            <td colspan="2">
+                                                <select class="custom-select" name="anggota_mhs[0]">
+                                                    <option selected>Pilih Mahasiswa</option>
+                                                    @foreach ($data['data_mhs'] as $item)
+                                                        <option value="{{ $item->mhs_id }}">
+                                                            ({{ $item->mhs_id }})
+                                                            {{ $item->mhs_nama }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </td>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="container mb-1">
+                    <div class="card">
+                        <div class="card-body d-flex justify-content-center">
+                            <button class="btn w-100 btn-primary"><b>Simpan dan Lanjutkan</b></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    @endif
+
+    @if ($data['step'] == '2')
+        <!-- step 2 -->
+        <form action="">
+            <div class="container mb-1">
+                <div class="card card-outline card-primary">
+                    <div class="card-header">
+                        <h4 class="card-title"><b>Komponen Pendanaan</b></h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-danger" role="alert">
+                            <h5><b>Perhatian</b></h5>
+                            <p class="m-0 p-0">Tuliskan rincian masing-masing komponen pendanaan pada berkas proposal yang
+                                anda
+                                unggah.</p>
+                        </div>
+                        <form>
+                            <div class="row form-group-row p-3">
+                                <div class="col-sm">
+                                    <label>Total Pendanaan <span style="color: red">*</span></label>
+                                </div>
+                                <div class="col">
+                                    <input type="text" class="form-control" placeholder="">
+                                    <p><b>Petunjuk: masukkan total dana penelitian yang diajukan.</b></p>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row form-group-row p-3">
+                                <div class="col-sm">
+                                    <label>Bahan habis pakai dan peralatan<span style="color: red">*</span> (Maks. <span
+                                            style="color: red">60%</span>)</label>
+                                </div>
+                                <div class="col">
+                                    <input type="text" class="form-control" placeholder="">
+                                </div>
+                            </div>
+                            <div class="row form-group-row p-3">
+                                <div class="col-sm">
+                                    <label>Perjalanan<span style="color: red">*</span> (Maks. <span
+                                            style="color: red">30%</span>)</label>
+                                </div>
+                                <div class="col">
+                                    <input type="text" class="form-control" placeholder="">
+                                </div>
+                            </div>
+                            <div class="row form-group-row p-3">
+                                <div class="col-sm">
+                                    <label>Lain-lain<span style="color: red">*</span> (Maks. <span
+                                            style="color: red">40%</span>)</label>
+                                    <p style="font-size: 13px">publikasi, seminar, laporan, lainnya</p>
+                                </div>
+                                <div class="col">
+                                    <input type="text" class="form-control" placeholder="">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="container mb-1">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <button type="button" class="btn btn-warning"><b>Kembali</b></button>
+                            <button type="button" class="btn btn-primary"><b>Lanjutkan>></b></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    @endif
+
+    @if ($data['step'] == '3')
+        <!-- step 3 -->
+<form action="">
+    <div class="row mb-1">
+    <div class="col">
+    <div class="card card-outline card-primary">
+        <div class="card-header">
+            <h4 class="card-title"><b>Capaian</b></h4>
+        </div>
+        <div class="card-body">
+            <div class="row form-group-row mt-3">
+                <div class="col-sm">
+                    <label>Luaran Tambahan<b class="text-danger">*</b></label>
+                </div>
+                <div class="col">
+                    <input type="text" class="form-control" placeholder="">
+                </div>
+            </div>
+            <div class="row form-group-row mt-3">
+                <div class="col-sm">
+                    <label>IKU<b class="text-danger">*</b></label>
+                </div>
+                <div class="col">
+                    <input type="text" class="form-control" placeholder="">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+        <div class="col">
+            <div class="card card-outline card-primary">
+                <div class="card-header">
+                    <h4 class="card-title"><b>Berkas Usulan</b></h4>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="proposalFile">Proposal <sup class="text-danger">(PDF)*</sup></label>
+                        <input type="file" class="form-control" id="proposalFile">
+                    </div>
+
+                    <div class="form-group">
+                    <label for="rabFile">Rencana Anggaran Biaya (RAB) <sup class="text-danger">(PDF)*</sup></label>
+                    <input type="file" class="form-control" id="rabFile">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+<div class="container mb-1">
+        <div class="card">
+            <div class="card-body">
+                <div class="row d-flex justify-content-between">
+                    <div class="col">
+                        <button type="button" class="btn btn-warning"><b>Kembali</b></button>
+                    </div>
+                    <div class="col">
+                        <button type="button" class="btn btn-primary"><b>Simpan Draft</b></button>
+                    </div>
+                    <div class="col">
+                        <button type="button" class="btn btn-success"><b>Simpan Permanen</b></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </form>
+    @endif
+=======
     @yield('step')
+>>>>>>> ba2b3c08c775baf98ab107d8200ac873be5f0963
 @endsection
