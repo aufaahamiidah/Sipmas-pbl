@@ -23,7 +23,7 @@
                                 <label>Skema</label>
                             </div>
                             <div class="col">
-                                <input type="text" name="skemaid" class="form-control" disabled>
+                                <input type="text" name="skemaid" class="form-control" disabled value="{{ $data ['data_penelitian'][0]->trx_skema_nama}}">
                             </div>
                         </div>
                         <div class="row form-group-row mt-3">
@@ -31,7 +31,7 @@
                                 <label>Judul <b class="text-danger">*</b></label>
                             </div>
                             <div class="col">
-                                <input type="text" name="skemaid" class="form-control" disabled>
+                                <input type="text" name="skemaid" class="form-control" disabled value="{{ $data ['data_penelitian'][0]->usulan_judul}}">
                             </div>
                         </div>
                         <div class="row form-group-row mt-3">
@@ -39,7 +39,7 @@
                                 <label>Abstrak <b class="text-danger">*</b></label>
                             </div>
                             <div class="col">
-                                <textarea class="form-control" id="abstrak" name="abstrak" disabled></textarea>
+                                <textarea class="form-control" id="abstrak" name="abstrak" disabled>{{ $data ['data_penelitian'][0]->usulan_abstrak}}</textarea>
                             </div>
                         </div>
                     </form>
@@ -61,6 +61,14 @@
                                             <th>Luaran</th>
                                         </tr>
                                     </thead>
+                                    <tbody>
+                                        @foreach($data['capaian']['luaran_wajib'] as $item)
+                                            <tr>
+                                                <td>{{ $item->luaran_wajib_nama }}</td>
+                                                <td>{{ $item->luaran_wajib_deskripsi }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
@@ -76,6 +84,14 @@
                                             <th>Luaran</th>
                                         </tr>
                                     </thead>
+                                    <tbody>
+                                        @foreach($data['capaian']['luaran_tambahan'] as $item)
+                                            <tr>
+                                                <td>{{ $item->luaran_tambahan_nama }}</td>
+                                                <td>{{ $item->luaran_tambahan_target }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
@@ -92,6 +108,15 @@
                                             <th>Bukti</th>
                                         </tr>
                                     </thead>
+                                    <tbody>
+                                        @foreach($data['capaian']['iku'] as $item)
+                                            <tr>
+                                                <td>{{ $item->iku_nama }}</td>
+                                                <td>{{ $item->trx_usulan_iku.iku_target}}</td>
+                                                <td>{{ $item->iku_bukti}}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
@@ -114,6 +139,18 @@
                                     <th class="text-center col-5">Status Verifikasi</th>
                                 </tr>
                             </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{{ $data['anggota']['dosen_ketua'][0]->dosen_nama_lengkap }} <b>(Ketua)</b></td>
+                                    <td>{{ $data['anggota']['dosen_ketua'][0]->is_verified }}</td>
+                                </tr>
+                                        @foreach($data['anggota']['dosen_anggota'] as $item)
+                                            <tr>
+                                                <td>{{ $item->dosen_nama_lengkap }}</td>
+                                                <td>{{ $item->is_verified}}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
                         </table>
                     </div>
                     <div>
@@ -128,6 +165,15 @@
                                     <th class="text-center col-4">Program Studi</th>
                                 </tr>
                             </thead>
+                            <tbody>
+                                        @foreach($data['anggota']['mahasiswa'] as $item)
+                                            <tr>
+                                                <td>{{ $item->mhs_id }}</td>
+                                                <td>{{ $item->mhs_nama}}</td>
+                                                <td>{{ $item->prodi_nama}}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
                         </table>
                     </div>
                 </div>
@@ -144,6 +190,14 @@
                                 <th class="text-center col-3">Status Berkas</th>
                             </tr>
                         </thead>
+                        <!-- <tbody>
+                            @foreach($data['berkas_usulan'] as $item)
+                                <tr>
+                                    <td>{{ $item->iku_nama }}</td>
+                                    <td>{{ $item->trx_usulan_iku.iku_target }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody> -->
                     </table>
                 </div>
             </div>
@@ -156,37 +210,22 @@
                                 <label>Total Pendanaan</label>
                             </div>
                             <div class="col">
-                                <input type="text" name="skemaid" class="form-control" disabled>
+                                <input type="text" name="skemaid" class="form-control" disabled value="{{ $data ['komponen_pendanaan']['total_pendanaan'][0]->usulan_pendanaan}}">
                             </div>
                         </div>
+                        @foreach ($data['komponen_pendanaan']['detail_pendanaan'] as $item)
                         <div class="row form-group-row mt-3">
                             <div class="col-12 col-lg-4">
-                                <label>Bahan habis pakai dan peralatan <span class="text-danger">*</span> (Maks. <span
-                                        class="text-danger">60%</span>)</label>
+                                <label>{{$item->pendanaan_nama}} <span class="text-danger">*</span> (Maks. <span
+                                        class="text-danger">{{$item->pendanaan_persentase}}</span>)</label>
                             </div>
                             <div class="col">
-                                <input type="text" name="skemaid" class="form-control" disabled>
+                                <input type="number" name="skemaid" class="form-control" disabled value="{{$item->pendanaan_value}}">
                             </div>
                         </div>
-                        <div class="row form-group-row mt-3">
-                            <div class="col-12 col-lg-4">
-                                <label>Perjalanan <span class="text-danger">*</span> (Maks. <span
-                                        class="text-danger">30%</span>)</label>
-                            </div>
-                            <div class="col">
-                                <input type="text" name="skemaid" class="form-control" disabled>
-                            </div>
-                        </div>
-                        <div class="row form-group-row mt-3">
-                            <div class="col-12 col-lg-4">
-                                <label>Lainnya <span class="text-danger">*</span> (Maks. <span
-                                        class="text-danger">40%</span>)</label>
-                                <p>publikasi, seminar, laporan, lainnya</p>
-                            </div>
-                            <div class="col">
-                                <input type="text" name="skemaid" class="form-control" disabled>
-                            </div>
-                        </div>
+                        @endforeach
+                        
+                        
                     </form>
                 </div>
             </div>
