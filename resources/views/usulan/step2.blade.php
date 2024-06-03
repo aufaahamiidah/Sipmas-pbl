@@ -48,8 +48,8 @@
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
-                        <a href="{{ url('tambah_usulan?&step=1&usulan_id=' . $_GET['usulan_id'] . '') }}" type="button"
-                            class="btn btn-warning"><b>Kembali</b></a>
+                        <a href="{{ url('tambah_usulan?&step=1&usulan_id=' . $_GET['usulan_id'] . '&edit=1') }}"
+                            type="button" class="btn btn-warning"><b>Kembali</b></a>
                         <button type="submit" class="btn btn-primary"><b>Lanjutkan>></b></button>
                     </div>
                 </div>

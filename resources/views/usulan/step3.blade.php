@@ -115,11 +115,9 @@
                                     </div>
                                     <div class="custom-file">
                                         <input type="hidden" name="id_file[{{ $key }}]">
-                                        <input type="file" class="custom-file-input"
-                                            accept="{{ $item->file_accepted_type }}" id="{{ $item->file_key }}"
-                                            name="inputFile[{{ $key }}]"
+                                        <input type="file" class="form-control" accept="{{ $item->file_accepted_type }}"
+                                            id="{{ $item->file_key }}" name="inputFile[{{ $key }}]"
                                             @if ($item->is_required == '1') required @endif>
-                                        <label class="custom-file-label" for="{{ $item->file_key }}">Choose file</label>
                                     </div>
                                 </div>
                                 <hr>
@@ -136,8 +134,10 @@
                                         type="button" class="btn btn-warning"><b>Kembali</b></a>
                                 </div>
                                 <div class="col text-right">
-                                    <button type="submit" class="btn btn-primary"><b>Simpan Draft</b></button>
-                                    <button type="submit" class="btn btn-success"><b>Simpan Permanen</b></button>
+                                    <input type="submit" value="Simpan sebagai Draf" name="btn-save"
+                                        class="btn btn-primary" style="transform: scale(0.9)">
+                                    <input type="submit" value="Simpan Permanen" name="btn-save" class="btn btn-success"
+                                        style="transform: scale(1.1)">
                                 </div>
                             </div>
                         </div>

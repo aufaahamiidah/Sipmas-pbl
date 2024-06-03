@@ -9,8 +9,15 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 
-class UsulanController extends Controller
+class DaftarUsulanController extends Controller
 {
+    public function index()
+    {
+        $usulan = $this->lihat_usulan();
+        $dosen_id = DB::table("ref_dosen")->where("dosen_email_polines", Auth::user()->email)->first();
+        $count_usulan = DB::table("trx_usulan_anggota_dosen")->where("dosen_id", $dosen_id->dosen_id)->count();
+        return view('usulan.index', compact('usulan', 'count_usulan'));
+    }
     public function lihat_usulan()
     {
         $dosen_id = DB::table("ref_dosen")->where("dosen_email_polines", Auth::user()->email)->first();
@@ -21,8 +28,6 @@ class UsulanController extends Controller
             $judul_usulan = DB::table('trx_usulan')->where('usulan_id', $value->usulan_id)->first();
             $nama_skema  = DB::table('trx_skema')->where('trx_skema_id', $judul_usulan->trx_skema_id)->first();
             $id_ketua = DB::table("trx_usulan_anggota_dosen")->where("usulan_id", $value->usulan_id)->where("is_ketua", 1)->pluck('dosen_id');
-            // $id_anggota_dosen = DB::table("trx_usulan_anggota_dosen")->where("usulan_id", $value->usulan_id)->where("is_ketua", 0)->pluck('dosen_id');
-            // $status = DB::table('trx_usulan_status')->where('usulan_id', $value->usulan_id)->first();
 
             $data[$key] = [
                 "usulan_id" =>  $value->usulan_id,
@@ -164,6 +169,7 @@ class UsulanController extends Controller
     public function step_2(Request $request)
     {
         try {
+            $nama_button = $request->input('btn-save');
             $usulan_id = $request->usulan_id;
             // Masukkan ke trx_usulan_luaran_tambahan
             $luaran_tambahan = $request->input('luaran');
@@ -228,13 +234,7 @@ class UsulanController extends Controller
             return back();
         }
     }
-    public function index()
-    {
-        $usulan = $this->lihat_usulan();
-        $dosen_id = DB::table("ref_dosen")->where("dosen_email_polines", Auth::user()->email)->first();
-        $count_usulan = DB::table("trx_usulan_anggota_dosen")->where("dosen_id", $dosen_id->dosen_id)->count();
-        return view('usulan.index', compact('usulan', 'count_usulan'));
-    }
+
     public function tambahUsulan()
     {
         $step = $_GET['step'];
@@ -259,6 +259,8 @@ class UsulanController extends Controller
             $data['skema_nama'] = $skema->trx_skema_nama;
             $data['skema_pendanaan'] = $skema_pendanaan;
             $data['ref_iku'] = $ref_iku;
+            $data['ketua_dosen'] = DB::table('ref_dosen')->where('dosen_email_polines', Auth::user()->email)
+                ->get(['dosen_id', 'dosen_nama_lengkap']);
 
             if ($_GET['usulan_id']) {
                 $usulan_id = $_GET['usulan_id'];

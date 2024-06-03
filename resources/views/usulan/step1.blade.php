@@ -97,13 +97,26 @@
                                         </tr>
                                     </thead>
                                     <tbody id="isiDosen">
+                                        <tr>
+                                            <td></td>
+                                            <td>
+                                                <select class="custom-select" name="ketua_dosen" disabled>
+                                                    <option selected value="{{ $data['ketua_dosen'][0]->dosen_id }}">
+                                                        {{ $data['ketua_dosen'][0]->dosen_nama_lengkap }}
+                                                        <b>(*Ketua)</b>
+                                                    </option>
+                                                </select>
+                                            </td>
+                                        </tr>
                                         @if ($_GET['usulan_id'] != '')
                                             @foreach ($data['data_usulan']['anggota_dosen'] as $key => $value)
                                                 <tr>
-                                                    <td colspan="2">
-
-                                                        <select class="custom-select"
-                                                            name="anggota_dosen[{{ $key }}]">
+                                                    <td class="text-center col-2">
+                                                        <button type="button" class="btn btn-danger delete-row"><i
+                                                                class="fa fa-trash"></i></button>
+                                                    </td>
+                                                    <td>
+                                                        <select class="custom-select" name="anggota_dosen[]">
                                                             <option selected value="{{ $value->dosen_id }}">
                                                                 {{ $value->dosen_nama_lengkap }}
                                                             </option>
@@ -120,7 +133,11 @@
                                             @endforeach
                                         @else
                                             <tr>
-                                                <td colspan="2">
+                                                <td class="text-center col-2">
+                                                    <button class="btn btn-danger delete-row"><i
+                                                            class="fas fa-trash"></i></button>
+                                                </td>
+                                                <td>
                                                     <select class="custom-select" name="anggota_dosen[0]">
                                                         <option selected>Pilih Dosen</option>
                                                         @foreach ($data['data_dosen'] as $item)
@@ -139,7 +156,7 @@
 
                             <div>
 
-                                <table class="table table-bordered" id="tableDosen">
+                                <table class="table table-bordered" id="tableMhs">
                                     <thead>
                                         <tr>
                                             <th colspan="2" class="bg-success text-center">Mahasiswa</th>
@@ -156,9 +173,12 @@
                                         @if ($_GET['usulan_id'] != '')
                                             @foreach ($data['data_usulan']['anggota_mhs'] as $key => $value)
                                                 <tr>
-                                                    <td colspan="2">
-                                                        <select class="custom-select"
-                                                            name="anggota_mhs[{{ $key }}]">
+                                                    <td class="text-center col-2">
+                                                        <button class="btn btn-danger delete-row"><i
+                                                                class="fas fa-trash"></i></button>
+                                                    </td>
+                                                    <td>
+                                                        <select class="custom-select" name="anggota_mhs[]">
                                                             <option selected value="{{ $value->mhs_id }}">
                                                                 {{ $value->mhs_nama }}
                                                             </option>
@@ -174,7 +194,11 @@
                                             @endforeach
                                         @else
                                             <tr>
-                                                <td colspan="2">
+                                                <td class="text-center col-2">
+                                                    <button class="btn btn-danger delete-row"><i
+                                                            class="fas fa-trash"></i></button>
+                                                </td>
+                                                <td>
                                                     <select class="custom-select" name="anggota_mhs[0]">
                                                         <option selected>Pilih Mahasiswa</option>
                                                         @foreach ($data['data_mhs'] as $item)
@@ -206,15 +230,22 @@
 
 @push('js')
     <script>
+        // Delete row on delete button click
+        $(document).on("click", ".delete", function() {
+            $(this).parents("tr").remove();
+            $(".add-new").removeAttr("disabled");
+        });
+
         const tbDosen = document.getElementById('isiDosen');
-        var count_dosen = 1;
         const tbMhs = document.getElementById('isiMhs');
-        var count_mhs = 1;
 
         function addDosen() {
             let newDosen = `
+            <td class="text-center col-2">
+                <button class="btn btn-danger delete-row" type="button"><i class="fas fa-trash"></i></button>
+            </td>
             <td colspan="2">
-                <select class="custom-select" name="anggota_dosen[` + count_dosen + `]">
+                <select class="custom-select" name="anggota_dosen[]">
                     <option selected>Pilih Dosen</option>
                     @foreach ($data['data_dosen'] as $item)
                         <option value="{{ $item->dosen_id }}">
@@ -226,13 +257,15 @@
             </td>
             `;
             tbDosen.innerHTML += newDosen;
-            count_dosen++;
         }
 
         function addMhs() {
             let newMhs = `
-            <td colspan="2">
-                <select class="custom-select" name="anggota_mhs[` + count_mhs + `]">
+            <td class="text-center col-2">
+                <button class="btn btn-danger delete-row" type="button"><i class="fas fa-trash"></i></button>
+            </td>
+            <td>
+                <select class="custom-select" name="anggota_mhs[]">
                     <option selected>Pilih Mahasiswa</option>
                     @foreach ($data['data_mhs'] as $item)
                         <option value="{{ $item->mhs_id }}">
@@ -243,7 +276,29 @@
             </td>
             `;
             tbMhs.innerHTML += newMhs;
-            count_dosen++;
         }
+
+        var tabelDosen = document.getElementById('tableDosen');
+        var tabelMhs = document.getElementById('tableMhs');
+
+        tabelDosen.addEventListener('click', function(e) {
+            if (e.target.classList.contains('delete-row')) {
+                e.target.closest('tr').remove();
+                const rows = document.querySelectorAll('#tableDosen tbody tr');
+                rows.forEach((row, index) => {
+                    row.querySelector('th').textContent = index + 1;
+                });
+            }
+        });
+
+        tabelMhs.addEventListener('click', function(e) {
+            if (e.target.classList.contains('delete-row')) {
+                e.target.closest('tr').remove();
+                const rows = document.querySelectorAll('#tableMhs tbody tr');
+                rows.forEach((row, index) => {
+                    row.querySelector('th').textContent = index + 1;
+                });
+            }
+        });
     </script>
 @endpush
