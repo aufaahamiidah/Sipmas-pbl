@@ -1,4 +1,4 @@
-@extends('usulan.tambah_usulan')
+@extends('daftar-usulan.tambah_usulan')
 
 @section('step')
     <form method="POST" @if ($_GET['usulan_id'] != '') action="update_step0"  @else action="{{ url('step_0') }}" @endif>

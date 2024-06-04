@@ -6,10 +6,18 @@ use App\Http\Controllers\DBBackupController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\PlottingReviewerController;
 use App\Http\Controllers\ProfilController;
+use App\Http\Controllers\RefPendanaanController;
+use App\Http\Controllers\RefSkemaController;
+use App\Http\Controllers\ReviewUsulanController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SkemaFileController;
+use App\Http\Controllers\SkemaSettingController;
 use App\Http\Controllers\UpdateController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UsulanController;
+use App\Http\Controllers\UsulanPenelitianController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -44,7 +52,7 @@ Route::get("/data_usulan", [HomeController::class, "data_usulan"]);
 Route::get("/edit_data", [HomeController::class, "showEditData"]);
 Route::post("/edit_data", [HomeController::class, "editData"]);
 
-Route::get('/usulan', [DaftarUsulanController::class, 'index'])->name('usulan');
+Route::get('/daftar-usulan', [DaftarUsulanController::class, 'index'])->name('usulan');
 Route::get('/detail_usulan', [DaftarUsulanController::class, 'detail'])->name('detail_usulan');
 Route::get('/tambah_usulan', [DaftarUsulanController::class, 'tambahUsulan'])->name('tambah_usulan');
 Route::post('/step_0', [DaftarUsulanController::class, 'step_0']);
@@ -58,3 +66,15 @@ Route::post('/update_step2', [UpdateController::class, 'step2']);
 Route::get('dbbackup', [DBBackupController::class, 'DBDataBackup']);
 Route::get('login/google/redirect', [GoogleLoginController::class, 'redirect'])->middleware('guest')->name('redirect');
 Route::get('login/google/callback', [GoogleLoginController::class, 'callback'])->middleware('guest')->name('callback');
+
+// Kelas B
+Route::resource('ref-skema', RefSkemaController::class);
+Route::resource('ref-skema/{trx_skema_id}/skema-file', SkemaFileController::class);
+Route::resource('ref-skema/{trx_skema_id}/skema-pendanaan', RefPendanaanController::class);
+Route::resource('ref-skema/{trx_skema_id}/skema-setting', SkemaSettingController::class);
+
+Route::resource('usulan', UsulanController::class);
+Route::resource('usulan-penelitian', UsulanPenelitianController::class);
+Route::resource('plotting-reviewer', PlottingReviewerController::class);
+Route::resource('review-usulan', ReviewUsulanController::class);
+Route::resource('plotting-reviewer', PlottingReviewerController::class);

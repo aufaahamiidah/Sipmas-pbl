@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @push('css')
-<!-- DataTables -->
+    <!-- DataTables -->
     <link rel="stylesheet" href="{{ asset('') }}plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet" href="{{ asset('') }}plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
     <link rel="stylesheet" href="{{ asset('') }}plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
@@ -10,11 +10,11 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6 text-uppercase">
-                    <h4 class="m-0">Daftar Usulan</h4>
+                    <h4 class="m-0">Review Usulan</h4>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        // Kasih filter
+                        
                     </ol>
                 </div>
             </div>
@@ -32,28 +32,36 @@
                                     <th>Judul</th>
                                     <th>Skema</th>
                                     <th>Anggota</th>
-                                    <th>Pendanaan</th>
+                                    <th>Tahun</th>
                                     <th>Status</th>
                                     <th>Detail</th>
                                 </thead>
                                 <tbody>
-                                @foreach ($usulan as $item)
+                                @foreach ($reviewUsulan as $item)
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $item->usulan_judul }}</td>
                                             <td>{{ $item->skema->trx_skema_nama }}</td>
-                                            <td>{{ $item->usulan_pendanaan }}</td>
-                                            <td>{{ $item->usulan_pendanaan }}</td>
-                                            <td>{{ $item->status_id }}</td>
-
+                                            {{ $output = '' }}
+                                            @foreach ($item->anggotaDosen as $dsn)
+                                                @php
+                                                    $output .= $dsn->dosen->dosen_nama . ', ';
+                                                @endphp
+                                            @endforeach
+                                            @php
+                                                $output = rtrim($output, ', ')
+                                            @endphp
+                                            <td>{{ $output }}</td>
+                                            <td>{{ $item->skema->periode_tahun }}</td>
+                                            <td>{{ $item->tahapReview->status->status_nama }}</td>
                                             <td>
                                                 <div class="flex items-col">
-                                                <button type="button" class="btn btn-block btn-sm btn-outline-info mr-2";
-                                                    onclick="window.location.href = 'ref-skema-file'"><i class="fas fa-eye"></i>
-                                                </button>
-                                                </div>
-                                            </td>
-                                            <style>
+                                                <a href="{{ route('review-usulan.show', $item->usulan_id) }}" class="btn btn-block btn-sm btn-outline-info mr-2">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                        <style>
                                             .flex {
                                                 display: flex;
                                             }
@@ -61,21 +69,22 @@
                                             .flex-col {
                                                 flex-direction: column;
                                             }
+
                                             .mb-2 {
                                                 margin-right: 5px;
                                             }
-                                            </style>
-                                        </tr>
+                                        </style>
+                                    </tr>
                                 @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    </div>
+</div>
+</div>
 @endsection
 @push('js')
 @endpush

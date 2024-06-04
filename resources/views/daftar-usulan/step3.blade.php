@@ -1,4 +1,4 @@
-@extends('usulan.tambah_usulan')
+@extends('daftar-usulan.tambah_usulan')
 
 @section('step')
     <form action="{{ url('step_2') }}" method="POST" enctype="multipart/form-data">

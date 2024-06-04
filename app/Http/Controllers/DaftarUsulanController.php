@@ -16,7 +16,7 @@ class DaftarUsulanController extends Controller
         $usulan = $this->lihat_usulan();
         $dosen_id = DB::table("ref_dosen")->where("dosen_email_polines", Auth::user()->email)->first();
         $count_usulan = DB::table("trx_usulan_anggota_dosen")->where("dosen_id", $dosen_id->dosen_id)->count();
-        return view('usulan.index', compact('usulan', 'count_usulan'));
+        return view('daftar-usulan.index', compact('usulan', 'count_usulan'));
     }
     public function lihat_usulan()
     {
@@ -278,7 +278,7 @@ class DaftarUsulanController extends Controller
                 ];
             }
 
-            return view('usulan.step1', compact('data'));
+            return view('daftar-usulan.step1', compact('data'));
         } else if ($step == 2) {
             $usulan_id = $_GET['usulan_id'];
 
@@ -295,7 +295,7 @@ class DaftarUsulanController extends Controller
                     ->get('pendanaan_value');
             }
 
-            return view('usulan.step2', compact('data'));
+            return view('daftar-usulan.step2', compact('data'));
         } else if ($step == 3) {
             $usulan_id = $_GET['usulan_id'];
             $skema_id = DB::table('trx_usulan')
@@ -338,7 +338,7 @@ class DaftarUsulanController extends Controller
                         'file_name'
                     ]);
             }
-            return view('usulan.step3', compact('data'));
+            return view('daftar-usulan.step3', compact('data'));
         }
     }
     public function detail()
@@ -416,6 +416,6 @@ class DaftarUsulanController extends Controller
             'komponen_pendanaan' => $KomponenPendanaan
         ];
 
-        return view('usulan.detail', compact('data'));
+        return view('daftar-usulan.detail', compact('data'));
     }
 }
