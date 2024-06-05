@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 
 class DaftarUsulanController extends Controller
@@ -171,14 +172,30 @@ class DaftarUsulanController extends Controller
         try {
             $nama_button = $request->input('btn-save');
             $usulan_id = $request->usulan_id;
+
+            if ($nama_button == "Simpan Permanen") {
+                DB::table('trx_usulan_status')
+                    ->where('usulan_id', $usulan_id)
+                    ->update([
+                        'is_active' => '0'
+                    ]);
+                DB::table('trx_usulan_status')
+                    ->insert([
+                        'usulan_id' => $usulan_id,
+                        'status_id' => 2,
+                        'created_by' => DB::table("ref_dosen")->where("dosen_email_polines", Auth::user()->email)->first()->dosen_id,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                        'is_active' => 1
+                    ]);
+            }
+
             // Masukkan ke trx_usulan_luaran_tambahan
             $luaran_tambahan = $request->input('luaran');
-            $target_luaran_tambahan = $request->input('targetLuaran');
             foreach ($luaran_tambahan as $key => $value) {
                 DB::table('trx_usulan_luaran_tambahan')->insert([
                     'usulan_id' => $usulan_id,
                     'luaran_tambahan_id' => $value,
-                    'luaran_tambahan_target' => $target_luaran_tambahan[$key]
                 ]);
             }
 
@@ -194,17 +211,17 @@ class DaftarUsulanController extends Controller
             }
 
             // Masukkan ke trx_usulan_file
-            $id_file = $request->id_file;
-            $namaFile = $request->inputFile;
+            $id_file = $request->input('id_file');
 
             $inputFile = $request->file('inputFile');
             foreach ($inputFile as $key => $value) {
-                $nama_file = date('Ymdhis') . '.' . $value->getClientOriginalExtension();
+                $random_string = Str::random(10);
+                $nama_file = $random_string . '.' . $value->getClientOriginalExtension();
                 DB::table('trx_usulan_file')
                     ->insert([
                         'usulan_id' => $usulan_id,
                         'skema_file_id' => $id_file[$key],
-                        'file_name' => $namaFile[$key],
+                        'file_name' => $nama_file,
                         'created_at' => now(),
                     ]);
                 $value->storeAs('public/trx_usulan_file', $nama_file);
@@ -250,7 +267,13 @@ class DaftarUsulanController extends Controller
             "data_mhs" => $data_mhs
         ];
         if ($step == 1) {
-            $skema_id = $_GET['skema_id'];
+            if ($_GET['usulan_id'] == '') {
+                $skema_id = $_GET['skema_id'];
+            } else {
+                $skema_id = DB::table('trx_usulan')
+                    ->where('usulan_id', $_GET['usulan_id'])
+                    ->pluck('trx_skema_id')[0];
+            }
             $skema = DB::table('trx_skema')->where('trx_skema_id', $skema_id)->first();
             $skema_pendanaan = DB::table('trx_skema_pendanaan')->where('trx_skema_id', $skema_id)->get();
             $ref_iku = DB::table('ref_iku')->where('jenis_skema_id', $skema_id);
@@ -362,14 +385,18 @@ class DaftarUsulanController extends Controller
         $iku = DB::table('trx_usulan_iku')
             ->join('ref_iku', 'trx_usulan_iku.iku_id', '=', 'ref_iku.iku_id')
             ->where('usulan_id', $usulan_id)
-            ->get(['iku_nama', 'trx_usulan_iku.iku_target', 'iku_bukti']);
+            ->get(['iku_nama', 'trx_usulan_iku.iku_target', 'iku_bukti', 'ref_iku.iku_id']);
 
         // Anggota
         $dosen = DB::table('trx_usulan_anggota_dosen')
             ->join('ref_dosen', 'trx_usulan_anggota_dosen.dosen_id', '=', 'ref_dosen.dosen_id')
             ->where('usulan_id', $usulan_id);
         $dosen_ketua = $dosen->where('is_ketua', 1)->get(['dosen_nama_lengkap', 'is_verified']);
-        $dosen_anggota = $dosen->where('is_ketua', 0)->get(['dosen_nama_lengkap', 'is_verified']);
+        $dosen_anggota = DB::table('trx_usulan_anggota_dosen')
+            ->join('ref_dosen', 'trx_usulan_anggota_dosen.dosen_id', '=', 'ref_dosen.dosen_id')
+            ->where('usulan_id', $usulan_id)
+            ->where('is_ketua', 0)
+            ->get();
         $mahasiswa = DB::table('trx_usulan_anggota_mhs')
             ->join('ref_mahasiswa', 'trx_usulan_anggota_mhs.mhs_id', '=', 'ref_mahasiswa.mhs_id')
             ->join('ref_prodi', 'ref_mahasiswa.prodi_id', '=', 'ref_prodi.prodi_id')

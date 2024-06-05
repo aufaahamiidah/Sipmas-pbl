@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class UpdateController extends Controller
 {
@@ -135,7 +136,26 @@ class UpdateController extends Controller
     {
         try {
             //Delete berkas
+            $nama_button = $request->input('btn-save');
             $usulan_id = $request->usulan_id;
+
+            if ($nama_button == "Simpan Permanen") {
+                DB::table('trx_usulan_status')
+                    ->where('usulan_id', $usulan_id)
+                    ->update([
+                        'is_active' => '0'
+                    ]);
+                DB::table('trx_usulan_status')
+                    ->insert([
+                        'usulan_id' => $usulan_id,
+                        'status_id' => 2,
+                        'created_by' => DB::table("ref_dosen")->where("dosen_email_polines", Auth::user()->email)->first()->dosen_id,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                        'is_active' => 1
+                    ]);
+            }
+
             $get_usulan_file = DB::table('trx_usulan_file')->where('usulan_id', $usulan_id);
             $deleted_file = $get_usulan_file->get(['file_name']);
             foreach ($deleted_file as $key => $value) {
@@ -149,7 +169,8 @@ class UpdateController extends Controller
 
             $inputFile = $request->file('inputFile');
             foreach ($inputFile as $key => $value) {
-                $nama_file = date('Ymdhis') . '.' . $value->getClientOriginalExtension();
+                $random_string = Str::random(10);
+                $nama_file = $random_string . '.' . $value->getClientOriginalExtension();
                 DB::table('trx_usulan_file')
                     ->insert([
                         'usulan_id' => $usulan_id,

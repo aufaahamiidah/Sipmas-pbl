@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\GoogleLoginController;
 use App\Http\Controllers\DaftarUsulanController;
 use App\Http\Controllers\DBBackupController;
+use App\Http\Controllers\FileController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\PermissionController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\RefPendanaanController;
 use App\Http\Controllers\RefSkemaController;
 use App\Http\Controllers\ReviewUsulanController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SimpanFileController;
 use App\Http\Controllers\SkemaFileController;
 use App\Http\Controllers\SkemaSettingController;
 use App\Http\Controllers\UpdateController;
@@ -66,6 +68,11 @@ Route::post('/update_step2', [UpdateController::class, 'step2']);
 Route::get('dbbackup', [DBBackupController::class, 'DBDataBackup']);
 Route::get('login/google/redirect', [GoogleLoginController::class, 'redirect'])->middleware('guest')->name('redirect');
 Route::get('login/google/callback', [GoogleLoginController::class, 'callback'])->middleware('guest')->name('callback');
+Route::get('/download/{file}', [FileController::class, 'download'])->name('file.download');
+Route::get('/download/iku/{file}', [FileController::class, 'downloadIku'])->name('iku.download');
+Route::get('/download/lwajib/{file}', [FileController::class, 'downloadLWajib'])->name('lwajib.download');
+Route::get('/download/ltambahan/{file}', [FileController::class, 'downloadLTambahan'])->name('ltambahan.download');
+Route::post('simpan_iku', [SimpanFileController::class, 'iku']);
 
 // Kelas B
 Route::resource('ref-skema', RefSkemaController::class);

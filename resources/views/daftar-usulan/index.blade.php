@@ -10,7 +10,7 @@
         </div>
 
         <div class="row mb-1">
-            <div class="col-12 col-md-4 card card-outline">
+            {{-- <div class="col-12 col-md-4 card card-outline">
                 <div class="card-header">
                     <h5 class="m-0 text-bold">Tahun Pelaksanaan</h5>
                 </div>
@@ -24,7 +24,7 @@
                     </select>
                 </div>
             </div>
-            <div class="col-md-1"></div>
+            <div class="col-md-1"></div> --}}
             <div class="col-12 col-md-7 card card-outline">
                 <div class="card-header">
                     <h5 class="m-0 text-bold">Usulan Skema Baru</h5>

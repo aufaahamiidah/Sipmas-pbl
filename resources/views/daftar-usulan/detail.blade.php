@@ -23,7 +23,8 @@
                                 <label>Skema</label>
                             </div>
                             <div class="col">
-                                <input type="text" name="skemaid" class="form-control" disabled value="{{ $data ['data_penelitian'][0]->trx_skema_nama}}">
+                                <input type="text" name="skemaid" class="form-control" disabled
+                                    value="{{ $data['data_penelitian'][0]->trx_skema_nama }}">
                             </div>
                         </div>
                         <div class="row form-group-row mt-3">
@@ -31,7 +32,8 @@
                                 <label>Judul <b class="text-danger">*</b></label>
                             </div>
                             <div class="col">
-                                <input type="text" name="skemaid" class="form-control" disabled value="{{ $data ['data_penelitian'][0]->usulan_judul}}">
+                                <input type="text" name="skemaid" class="form-control" disabled
+                                    value="{{ $data['data_penelitian'][0]->usulan_judul }}">
                             </div>
                         </div>
                         <div class="row form-group-row mt-3">
@@ -39,7 +41,7 @@
                                 <label>Abstrak <b class="text-danger">*</b></label>
                             </div>
                             <div class="col">
-                                <textarea class="form-control" id="abstrak" name="abstrak" disabled>{{ $data ['data_penelitian'][0]->usulan_abstrak}}</textarea>
+                                <textarea class="form-control" id="abstrak" name="abstrak" disabled>{{ $data['data_penelitian'][0]->usulan_abstrak }}</textarea>
                             </div>
                         </div>
                     </form>
@@ -48,58 +50,63 @@
             <div class="card card-outline card-primary">
                 <div class="card-header"><b>Capaian</b></div>
                 <div class="card-body">
-                    <form>
-                        <div class="row form-group-row">
-                            <div class="col-12 col-lg-4">
-                                <label>Luaran Wajib</label>
-                            </div>
-                            <div class="col">
-                                <table class="table table-bordered">
-                                    <thead>
-                                        <tr class="text-center">
-                                            <th>Jenis Luaran Wajib</th>
-                                            <th>Luaran</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($data['capaian']['luaran_wajib'] as $item)
-                                            <tr>
-                                                <td>{{ $item->luaran_wajib_nama }}</td>
-                                                <td>{{ $item->luaran_wajib_deskripsi }}</td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
+                    <div class="row form-group-row">
+                        <div class="col-12 col-lg-4">
+                            <label>Luaran Wajib</label>
                         </div>
-                        <div class="row form-group-row mt-3">
-                            <div class="col-12 col-lg-4">
-                                <label>Luaran Tambahan</label>
-                            </div>
-                            <div class="col">
-                                <table class="table table-bordered">
-                                    <thead>
-                                        <tr class="text-center">
-                                            <th>Jenis Luaran Tambahan</th>
-                                            <th>Luaran</th>
+                        <div class="col">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr class="text-center">
+                                        <th>Jenis Luaran Wajib</th>
+                                        <th>Luaran</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($data['capaian']['luaran_wajib'] as $item)
+                                        <tr>
+                                            <td>{{ $item->luaran_wajib_nama }}</td>
+                                            <td>{{ $item->luaran_wajib_deskripsi }}</td>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($data['capaian']['luaran_tambahan'] as $item)
-                                            <tr>
-                                                <td>{{ $item->luaran_tambahan_nama }}</td>
-                                                <td>{{ $item->luaran_tambahan_target }}</td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
+                    </div>
+                    <div class="row form-group-row mt-3">
+                        <div class="col-12 col-lg-4">
+                            <label>Luaran Tambahan</label>
+                        </div>
+                        <div class="col">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr class="text-center">
+                                        <th>Jenis Luaran Tambahan</th>
+                                        <th>Luaran</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($data['capaian']['luaran_tambahan'] as $item)
+                                        <tr>
+                                            <td>{{ $item->luaran_tambahan_nama }}</td>
+                                            <td>{{ $item->luaran_tambahan_target }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <form action="/simpan_iku" method="POST">
+                        @csrf
+                        <input type="hidden" name="usulan_id" value="{{ $_GET['usulan_id'] }}">
                         <div class="row form-group-row mt-3">
                             <div class="col-12 col-lg-4">
                                 <label>IKU</label>
+                                <button type="submit" class="btn btn-primary">Simpan</button>
                             </div>
                             <div class="col">
+
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr class="text-center">
@@ -109,15 +116,25 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach($data['capaian']['iku'] as $item)
+                                        @foreach ($data['capaian']['iku'] as $key => $item)
                                             <tr>
                                                 <td>{{ $item->iku_nama }}</td>
-                                                <td>{{ $item->trx_usulan_iku.iku_target}}</td>
-                                                <td>{{ $item->iku_bukti}}</td>
+                                                <td>{{ $item->iku_target }}</td>
+                                                @if ($item->iku_bukti == '')
+                                                    <td>
+                                                        <input type="hidden" name="id_iku[{{ $key }}]"
+                                                            value="{{ $item->iku_id }}">
+                                                        <input type="file" name="iku[{{ $key }}]">
+                                                    </td>
+                                                @else
+                                                    <td><a href="{{ route('iku.download') }}"><i class="fa fa-eye"></i></a>
+                                                    </td>
+                                                @endif
                                             </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
+
                             </div>
                         </div>
                     </form>
@@ -144,13 +161,13 @@
                                     <td>{{ $data['anggota']['dosen_ketua'][0]->dosen_nama_lengkap }} <b>(Ketua)</b></td>
                                     <td>{{ $data['anggota']['dosen_ketua'][0]->is_verified }}</td>
                                 </tr>
-                                        @foreach($data['anggota']['dosen_anggota'] as $item)
-                                            <tr>
-                                                <td>{{ $item->dosen_nama_lengkap }}</td>
-                                                <td>{{ $item->is_verified}}</td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
+                                @foreach ($data['anggota']['dosen_anggota'] as $item)
+                                    <tr>
+                                        <td>{{ $item->dosen_nama_lengkap }}</td>
+                                        <td>{{ $item->is_verified }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
                         </table>
                     </div>
                     <div>
@@ -166,14 +183,14 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                        @foreach($data['anggota']['mahasiswa'] as $item)
-                                            <tr>
-                                                <td>{{ $item->mhs_id }}</td>
-                                                <td>{{ $item->mhs_nama}}</td>
-                                                <td>{{ $item->prodi_nama}}</td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
+                                @foreach ($data['anggota']['mahasiswa'] as $item)
+                                    <tr>
+                                        <td>{{ $item->mhs_id }}</td>
+                                        <td>{{ $item->mhs_nama }}</td>
+                                        <td>{{ $item->prodi_nama }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -190,14 +207,29 @@
                                 <th class="text-center col-3">Status Berkas</th>
                             </tr>
                         </thead>
-                        <!-- <tbody>
-                            @foreach($data['berkas_usulan'] as $item)
+                        <tbody>
+                            @foreach ($data['berkas_usulan'] as $key => $value)
                                 <tr>
-                                    <td>{{ $item->iku_nama }}</td>
-                                    <td>{{ $item->trx_usulan_iku.iku_target }}</td>
+                                    <td>{{ $key + 1 }}</td>
+                                    <td>{{ $value->file_caption }}</td>
+                                    <td><a href="{{ route('file.download', ['file' => $value->file_name]) }}"
+                                            class="btn btn-primary">
+                                            <i class="fa fa-eye"></i>
+                                        </a></td>
+                                    <td>
+                                        @if ($value->file_status == 0)
+                                            <span class="text-warning">Pending</span>
+                                        @else
+                                            @if ($value->file_status == 1)
+                                                <span class="text-success">Valid</span>
+                                            @else
+                                                <span class="text-danger">Tidak Valid</span>
+                                            @endif
+                                        @endif
+                                    </td>
                                 </tr>
                             @endforeach
-                        </tbody> -->
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -210,22 +242,24 @@
                                 <label>Total Pendanaan</label>
                             </div>
                             <div class="col">
-                                <input type="text" name="skemaid" class="form-control" disabled value="{{ $data ['komponen_pendanaan']['total_pendanaan'][0]->usulan_pendanaan}}">
+                                <input type="text" name="skemaid" class="form-control" disabled
+                                    value="{{ $data['komponen_pendanaan']['total_pendanaan'][0]->usulan_pendanaan }}">
                             </div>
                         </div>
                         @foreach ($data['komponen_pendanaan']['detail_pendanaan'] as $item)
-                        <div class="row form-group-row mt-3">
-                            <div class="col-12 col-lg-4">
-                                <label>{{$item->pendanaan_nama}} <span class="text-danger">*</span> (Maks. <span
-                                        class="text-danger">{{$item->pendanaan_persentase}}</span>)</label>
+                            <div class="row form-group-row mt-3">
+                                <div class="col-12 col-lg-4">
+                                    <label>{{ $item->pendanaan_nama }} <span class="text-danger">*</span> (Maks. <span
+                                            class="text-danger">{{ $item->pendanaan_persentase }}</span>)</label>
+                                </div>
+                                <div class="col">
+                                    <input type="number" name="skemaid" class="form-control" disabled
+                                        value="{{ $item->pendanaan_value }}">
+                                </div>
                             </div>
-                            <div class="col">
-                                <input type="number" name="skemaid" class="form-control" disabled value="{{$item->pendanaan_value}}">
-                            </div>
-                        </div>
                         @endforeach
-                        
-                        
+
+
                     </form>
                 </div>
             </div>
